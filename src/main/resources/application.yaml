@@ -1,0 +1,23 @@
+#spring.application.name=myevent-be
+
+
+server:
+  port: 8080
+  servlet:
+    context-path: /event-management
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:31622;databaseName=event-management2;encrypt=false;trustServerCertificate=true
+    username: sa
+    password: 123
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    driverClassName: com.mssql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+jwt:
+  signerKey: "qqziwod2yMQH8iDEZ/893gnzz4KtX4YDKnJz7OuQ/rSjdRssiWWtynVHhmERdhs7"
+  valid-duration: 20 #in second
+  refreshable-duration: 120 # in seconds

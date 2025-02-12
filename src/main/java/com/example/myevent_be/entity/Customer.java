@@ -1,0 +1,33 @@
+package com.example.myevent_be.entity;
+
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+import java.util.Date;
+import java.util.Set;
+
+@Data
+@Table(name = "customer")
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
+public class Customer {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
+
+    String name;
+    String phone_number;
+    String address;
+    Date create_at;
+    Date update_at;
+
+    @OneToMany(mappedBy = "customer")
+    Set<Contract> contracts;
+}
