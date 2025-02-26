@@ -43,7 +43,7 @@ public class ApplicationInitConfig {
                         .password(passwordEncoder.encode("admin"))
                         .role(adminRole) // Gán vai trò ADMIN cho người dùng
                         .build();
-
+    
                 // Lưu người dùng vào cơ sở dữ liệu
                 userRepository.save(user);
 

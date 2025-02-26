@@ -24,11 +24,11 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserController {
 
-    @Autowired
-   private UserService userService;
+//    @Autowired
+    private UserService userService;
 
     // dang ky tai khoan
-    @PostMapping("/signin-up")
+    @PostMapping("/signing-up")
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(request))

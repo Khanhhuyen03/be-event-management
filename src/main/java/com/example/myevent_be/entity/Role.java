@@ -25,7 +25,9 @@ public class Role {
     String id;
 
     String name;
-
+//    @Enumerated(EnumType.STRING) // Thêm annotation này để ánh xạ Enum dưới dạng chuỗi
+//    @Column(name = "name", columnDefinition = "NVARCHAR(50)")
+//    com.example.myevent_be.enums.Role name;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP) // Xác định kiểu thời gian
     @Column(updatable = false)

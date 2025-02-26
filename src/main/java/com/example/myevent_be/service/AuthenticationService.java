@@ -14,17 +14,18 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -110,9 +111,18 @@ public class AuthenticationService {
         StringJoiner stringJoiner = new StringJoiner(" ");
         Role role = user.getRole();
         if (role != null) {
-            stringJoiner.add(role.toString());
+            stringJoiner.add(role.getName());
         }
 
         return stringJoiner.toString();
     }
+
+    @Transactional
+    public void someMethod(String userId) {
+        User user = userRepository.findById(userId).orElseThrow();
+        Hibernate.initialize(user.getRole()); // Khởi tạo collection trước khi dùng
+        System.out.println(user.getRole()); // Giờ có thể sử dụng mà không lỗi
+    }
+
+
 }
