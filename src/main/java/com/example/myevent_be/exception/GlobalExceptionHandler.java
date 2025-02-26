@@ -17,7 +17,8 @@ public class GlobalExceptionHandler {
     private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handlingRuntimeExceptioin(RuntimeException exception){
+    ResponseEntity<ApiResponse> handlingRuntimeExceptioin(Exception exception){
+        exception.printStackTrace(); // Log lỗi để debug
         ApiResponse apiResponse = new ApiResponse();
 
         apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
@@ -51,20 +52,21 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse> handlingValidattion(MethodArgumentNotValidException exception){
-        String enumkey = exception.getFieldError().getDefaultMessage();
+//        String enumkey = exception.getFieldError().getDefaultMessage();
+        String enumkey = exception.getFieldError() != null ? exception.getFieldError().getDefaultMessage() : "INVALID_INPUT";
 
         ErrorCode errorCode = ErrorCode.INVALID_KEY;
-//        Map<String, Object> attribute = null;
+        Map<String, Object> attribute = null;
         try {
             errorCode = ErrorCode.valueOf(enumkey);
 
-//            var constrainViolation = exception.getBindingResult().getAllErrors().stream()
-//                    .findFirst()
-//                    .map(error -> ((ConstraintViolation<?>) error.unwrap(ConstraintViolation.class)))
-//                    .orElse(null);
-//            if (constrainViolation != null){
-//                attribute = constrainViolation.getConstraintDescriptor().getAttributes();
-//            }
+            var constrainViolation = exception.getBindingResult().getAllErrors().stream()
+                    .findFirst()
+                    .map(error -> ((ConstraintViolation<?>) error.unwrap(ConstraintViolation.class)))
+                    .orElse(null);
+            if (constrainViolation != null){
+                attribute = constrainViolation.getConstraintDescriptor().getAttributes();
+            }
         }
         catch (IllegalArgumentException e){
         }
@@ -72,8 +74,8 @@ public class GlobalExceptionHandler {
 
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
-//        apiResponse.setMessage(
-//                Objects.nonNull(attribute) ? mapAttribute(errorCode.getMessage(), attribute) : errorCode.getMessage());
+        apiResponse.setMessage(
+                Objects.nonNull(attribute) ? mapAttribute(errorCode.getMessage(), attribute) : errorCode.getMessage());
 
         return ResponseEntity.badRequest().body(apiResponse);
     }

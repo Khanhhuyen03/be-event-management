@@ -28,7 +28,7 @@ public class UserController {
    private UserService userService;
 
     // dang ky tai khoan
-    @PostMapping("/signin-up")
+    @PostMapping("/signing-up")
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreateRequest request){
         return ApiResponse.<UserResponse>builder()
                 .result(userService.createUser(request))
