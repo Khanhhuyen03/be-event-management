@@ -21,7 +21,8 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENPOINTS={
-            "/users", "users/signing-up", "/auth/login", "/auth/introspect"
+            "/users/signing-up", "/auth/login", "/auth/introspect", "/event", "/event/**",
+            "/auth/logout"
     };
 
     @Value("${jwt.signerKey}")
@@ -53,8 +54,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENPOINTS)
+        httpSecurity.authorizeHttpRequests(request -> request
+                .requestMatchers(PUBLIC_ENPOINTS)
                 .permitAll()
+                .requestMatchers("/event", "/event/**").permitAll()
                 .requestMatchers("/event-type/**").hasAuthority("ADMIN") // Chỉ ADMIN mới được tạo event type
                 .anyRequest()
                 .authenticated());
@@ -63,7 +66,7 @@ public class SecurityConfig {
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDeCoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                .authenticationEntryPoint(new JwtAuthenticationEntryPonit()));
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
         return httpSecurity.build();

@@ -10,6 +10,7 @@ import com.example.myevent_be.exception.ErrorCode;
 import com.example.myevent_be.mapper.UserMapper;
 import com.example.myevent_be.repository.RoleRepository;
 import com.example.myevent_be.repository.UserRepository;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.AccessLevel;
@@ -37,16 +38,34 @@ public class UserService {
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        // Lấy Role từ cơ sở dữ liệu
-        Role role = roleRepository.findByName("USER")
-                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+//        // Lấy Role từ cơ sở dữ liệu
+//        Role role = roleRepository.findByName("USER")
+//                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED));
+//
+//        // Gán Role cho User
+//        user.setRole(role);
 
-        // Gán Role cho User
+//        // Gán Role mặc định mà không lấy từ database
+//        Role defaultRole = new Role();
+//        defaultRole.setName("USER");
+//
+//        user.setRole(defaultRole);
+
+        // Kiểm tra xem role "USER" đã tồn tại chưa
+        Role role = roleRepository.findByName("USER")
+                .orElseGet(() -> {
+                    Role newRole = new Role();
+                    newRole.setName("USER");
+                    return roleRepository.save(newRole); // Lưu vào database nếu chưa có
+                });
+
+        // Gán role cho user
         user.setRole(role);
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     public List<UserResponse> getUsers(){
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
@@ -72,5 +91,6 @@ public class UserService {
     public void deleteUser(String userId){
         userRepository.deleteById(userId);
     }
+
 
 }

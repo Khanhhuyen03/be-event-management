@@ -16,7 +16,9 @@ public enum ErrorCode {
     USER_NOT_EXISTED(1005, "User not existed", HttpStatus.NOT_FOUND),
     UNAUTHENTICATED(1006, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(1007, "Unauthorized", HttpStatus.UNAUTHORIZED),
-    EVENTTYPE_EXISTED(1008, "Event type existed", HttpStatus.BAD_REQUEST);
+    EVENTTYPE_EXISTED(1008, "Event type existed", HttpStatus.BAD_REQUEST),
+    EVENT_TYPE_NOT_FOUND(1009, "Event type not found", HttpStatus.BAD_REQUEST)
+    ;
 
     int code;
     String message;

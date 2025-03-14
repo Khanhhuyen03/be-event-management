@@ -13,38 +13,28 @@ import java.util.Date;
 import java.util.Set;
 
 @Data
-@Table(name = "event")
+@Table(name = "device_type")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Event {
+public class Device_Type {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
     String name;
-    String description;
-    String detail;
-    String img;
-    boolean event_format;
-    boolean is_template;
-    String online_link;
-    String invitation_link;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    Date created_at;
+    Date create_at;
 
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date update_at;
 
-    @ManyToOne
-    @JoinColumn(name = "eventType_id", referencedColumnName = "id", nullable = false)
-    EventType event_type;
+    @OneToMany(mappedBy = "device_type")
+    Set<Device> devices;
 
-    @OneToMany(mappedBy = "event")
-    Set<Rental> rentals;
 }
