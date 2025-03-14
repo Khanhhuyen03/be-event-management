@@ -8,7 +8,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:sqlserver://localhost:31622;databaseName=event-management2;encrypt=false;trustServerCertificate=true
+    url: jdbc:sqlserver://localhost:31622;databaseName=event-management3;encrypt=false;trustServerCertificate=true
     username: sa
     password: 123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver

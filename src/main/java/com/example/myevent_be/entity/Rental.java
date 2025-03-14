@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -30,7 +32,13 @@ public class Rental {
     BigDecimal total_price;
     Date rental_start_time;
     Date rental_end_time;
+
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     Date create_at;
+
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     Date update_at;
     String custom_location;
 
@@ -42,7 +50,7 @@ public class Rental {
     Set<LocationRental> location;
 
     @OneToMany(mappedBy = "rental")
-    Set<HumanResourcesRental> human_resoures_rentals;
+    Set<ServiceRental> service_rentals;
 
     @OneToMany(mappedBy = "rental")
     Set<DeviceRental> device_rentals;

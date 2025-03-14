@@ -1,16 +1,16 @@
 package com.example.myevent_be.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
+@Builder
 @Table(name = "token")
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -28,7 +28,18 @@ public class Token {
     String access_token;
     String refresh_token;
     String email;
+
+//    @Version
+//    private Integer version; // Hibernate sẽ dùng để kiểm tra xung đột dữ liệu
+
     Date last_date;
+
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     Date create_at;
+
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     Date update_at;
+
 }
