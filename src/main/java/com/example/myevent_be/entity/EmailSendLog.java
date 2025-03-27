@@ -26,9 +26,9 @@ public class EmailSendLog {
     @JoinColumn(name = "contract_id")
     Contract contract;
 
-    String file_name;
-    Date creat_at;
-    Date update_at;
+    String fileName;
+    Date creatAt;
+    Date updateAt;
 
     @OneToMany(mappedBy = "emailSendLog")
     Set<Guest> guests;

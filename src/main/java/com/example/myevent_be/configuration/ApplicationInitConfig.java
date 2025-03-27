@@ -9,19 +9,29 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Configuration
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@CrossOrigin("http://localhost:3000")
 public class ApplicationInitConfig {
 
     PasswordEncoder passwordEncoder;
 
     @Bean
+//    @ConditionalOnProperty(
+//            prefix = "spring",
+//            value = "datasource.driverClassName",
+//            havingValue = "driverClassName: \"com.mysql.cj.jdbc.Driver"
+//    )
+    @ConditionalOnMissingBean(ApplicationRunner.class)
     ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository){
         return args -> {
             // Kiểm tra nếu người dùng với email 'admin123@gmail.com' chưa tồn tại
@@ -40,6 +50,7 @@ public class ApplicationInitConfig {
                         .first_name("admin")
                         .last_name("admin")
                         .email("admin123@gmail.com")
+                        .avatar("D:\\myevent\\myevent-be\\myevent-be\\src\\img")
                         .password(passwordEncoder.encode("admin"))
                         .role(adminRole) // Gán vai trò ADMIN cho người dùng
                         .build();
