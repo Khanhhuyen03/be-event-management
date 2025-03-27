@@ -10,6 +10,7 @@ import com.example.myevent_be.exception.ErrorCode;
 import com.example.myevent_be.mapper.UserMapper;
 import com.example.myevent_be.repository.RoleRepository;
 import com.example.myevent_be.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +24,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class UserService {
 
     UserRepository userRepository;
@@ -71,9 +73,12 @@ public class UserService {
     }
 
     public UserResponse getUser(String id){
+        log.info("Fetching user with ID:  {}", id);
         return userMapper.toUserResponse(userRepository
                 .findById(id).orElseThrow(() -> new RuntimeException("User not found")));
     }
+
+
 
     public UserResponse updateUser(UserUpdateRequest request, String userId){
 

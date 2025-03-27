@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-
 public class DeviceService {
 
     private final DeviceRepository deviceRepository;
@@ -52,9 +51,9 @@ public class DeviceService {
         existingDevice.setName(request.getName());
         existingDevice.setDescription(request.getDescription()); // Thêm nếu cần
         existingDevice.setImage(request.getImage()); // Thêm nếu cần
-        existingDevice.setHourly_rental_fee(request.getHourlyRentalFee());
+//        existingDevice.setHourly_rental_fee(request.getHourlyRentalFee());
         existingDevice.setQuantity(request.getQuantity());
-        existingDevice.setUpdate_at(new Date());
+//        existingDevice.setUpdate_at(new Date());
 
         // Lưu lại vào database
         Device updatedDevice = deviceRepository.save(existingDevice);

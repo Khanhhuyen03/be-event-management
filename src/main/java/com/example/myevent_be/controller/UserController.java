@@ -40,6 +40,7 @@ public class UserController {
         return userService.getUsers();
     }
 
+
     @GetMapping("/{userId}")
     UserResponse getUser(@PathVariable("userId") String userId){
         return userService.getUser(userId);

@@ -5,11 +5,13 @@ import com.example.myevent_be.dto.request.IntrospectRequest;
 import com.example.myevent_be.dto.request.LogoutRequest;
 import com.example.myevent_be.dto.response.AuthenticationResponse;
 import com.example.myevent_be.dto.response.IntrospectResponse;
+import com.example.myevent_be.dto.response.UserResponse;
 import com.example.myevent_be.entity.Role;
 import com.example.myevent_be.entity.Token;
 import com.example.myevent_be.entity.User;
 import com.example.myevent_be.exception.AppException;
 import com.example.myevent_be.exception.ErrorCode;
+import com.example.myevent_be.mapper.UserMapper;
 import com.example.myevent_be.repository.TokenRepository;
 import com.example.myevent_be.repository.UserRepository;
 import com.nimbusds.jose.*;
@@ -46,6 +48,7 @@ public class AuthenticationService {
 
     UserRepository userRepository;
     TokenRepository tokenRepository;
+    UserMapper userMapper;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -59,6 +62,8 @@ public class AuthenticationService {
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
+//        System.out.println("User found: " + user); // 🛠 Debug dữ liệu
+
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         boolean authenticated =passwordEncoder.matches(request.getPassword(), user.getPassword());
 
@@ -68,20 +73,27 @@ public class AuthenticationService {
 
         var token = generateToken(user);
 
-        return AuthenticationResponse.builder().token(token).authenticated(true).build();
+        return AuthenticationResponse.builder()
+                .token(token).authenticated(true)
+                .user(userMapper.toUserResponse(user)) // 🆕 Trả về user trực tiếp để kiểm tra
+                .build();
     }
 
+
+    // login
     public String generateToken(User user){
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getEmail())
+                .claim("userId", user.getId()) // Thêm userId vào claim
                 .issuer("khanhhuyen")
                 .issueTime(new Date())
                 .expirationTime(new Date(Instant.now()
                         .plus(1, ChronoUnit.HOURS)
                         .toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
+                .claim("userId", user.getId())  // Thêm ID vào claim
                 .claim("scope", buildScope(user))
                 .build();
 
