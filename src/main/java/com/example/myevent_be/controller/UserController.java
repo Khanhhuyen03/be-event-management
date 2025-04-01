@@ -1,9 +1,11 @@
 package com.example.myevent_be.controller;
 
+import com.example.myevent_be.dto.request.UpdateUserRoleRequest;
 import com.example.myevent_be.dto.request.UserCreateRequest;
 import com.example.myevent_be.dto.request.UserUpdateRequest;
 import com.example.myevent_be.dto.response.ApiResponse;
 import com.example.myevent_be.dto.response.UserResponse;
+import com.example.myevent_be.entity.User;
 import com.example.myevent_be.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -25,7 +27,7 @@ import java.util.List;
 public class UserController {
 
 //    @Autowired
-    private UserService userService;
+    UserService userService;
 
     // dang ky tai khoan
     @PostMapping("/signing-up")
@@ -55,5 +57,10 @@ public class UserController {
     String deleteUser(@PathVariable String userId){
         userService.deleteUser(userId);
         return "User has been deleted";
+    }
+
+    @PutMapping("/update-role/{userId}")
+    UserResponse updateUserRole(@PathVariable String userId,@RequestBody UpdateUserRoleRequest request) {
+        return userService.updateUserRole(userId, request.getRole());
     }
 }
