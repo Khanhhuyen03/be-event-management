@@ -35,10 +35,7 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.Optional;
-import java.util.StringJoiner;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -131,6 +128,11 @@ public class AuthenticationService {
     private String buildScope(User user){
         StringJoiner stringJoiner = new StringJoiner(" ");
         Role role = user.getRole();
+//        Set<Role> role = user.getRole();
+//        for (Role roles : role) {
+//            stringJoiner.add(roles.getName()); // Ví dụ: Lấy tên role
+//        }
+
         if (role != null) {
             stringJoiner.add(role.getName());
         }

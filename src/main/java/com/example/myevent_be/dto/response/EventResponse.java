@@ -1,7 +1,9 @@
 package com.example.myevent_be.dto.response;
 
+import com.example.myevent_be.entity.Event;
 import com.example.myevent_be.entity.EventType;
 import com.example.myevent_be.entity.Rental;
+import com.example.myevent_be.entity.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,8 +32,6 @@ public class EventResponse {
     String invitation_link;
     Date created_at;
     Date update_at;
-    String eventType_id;
+    String eventTypeName; // Chỉ lấy tên của eventType
 
-    @OneToMany(mappedBy = "event")
-    Set<Rental> rentals;
 }

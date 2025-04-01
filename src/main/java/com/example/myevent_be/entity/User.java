@@ -1,6 +1,8 @@
 package com.example.myevent_be.entity;
 
+import com.example.myevent_be.validater.ValidPhoneNumber;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -25,16 +27,19 @@ public class User {
 
     String first_name;
     String last_name;
+
+    @Email(message = "Email không hợp lệ")
     String email;
 
     @Size(min = 8)
     String password;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     Role role;
 
     String avatar;
+    @ValidPhoneNumber
     String phone_number;
 
     @CreationTimestamp

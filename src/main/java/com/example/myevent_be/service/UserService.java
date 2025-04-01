@@ -1,5 +1,6 @@
 package com.example.myevent_be.service;
 
+import com.example.myevent_be.dto.request.UpdateUserRoleRequest;
 import com.example.myevent_be.dto.request.UserCreateRequest;
 import com.example.myevent_be.dto.request.UserUpdateRequest;
 import com.example.myevent_be.dto.response.UserResponse;
@@ -20,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class UserService {
 
     UserRepository userRepository;
     UserMapper userMapper;
-    private final RoleRepository roleRepository;
+    RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
 
     public UserResponse createUser(UserCreateRequest request){
@@ -63,6 +65,7 @@ public class UserService {
 
         // Gán role cho user
         user.setRole(role);
+//        user.setRole(Set.of(role));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
@@ -78,8 +81,6 @@ public class UserService {
                 .findById(id).orElseThrow(() -> new RuntimeException("User not found")));
     }
 
-
-
     public UserResponse updateUser(UserUpdateRequest request, String userId){
 
         User user = userRepository.findById(userId).orElseThrow(
@@ -90,6 +91,7 @@ public class UserService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -97,5 +99,17 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public UserResponse updateUserRole(String userId, String roleName) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RuntimeException("Role not found: " + roleName));
+
+        user.setRole(role);
+//        user.setRole(Set.of(role));
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
 }
