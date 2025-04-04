@@ -30,6 +30,7 @@ public class Device {
     String image;
     BigDecimal hourly_rental_fee;
     int quantity;
+    String place;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

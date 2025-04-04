@@ -29,7 +29,7 @@ public class ApplicationInitConfig {
 //    @ConditionalOnProperty(
 //            prefix = "spring",
 //            value = "datasource.driverClassName",
-//            havingValue = "driverClassName: \"com.mysql.cj.jdbc.Driver"
+//            havingValue = "driverClassName: \"com.mssql.cj.jdbc.Driver"
 //    )
     @ConditionalOnMissingBean(ApplicationRunner.class)
     ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository){
@@ -45,12 +45,23 @@ public class ApplicationInitConfig {
                             return roleRepository.save(newRole);
                         });
 
+                // Kiểm tra nếu role SUPPLIER chưa tồn tại, nếu không có thì tạo
+                Role supplierRole = roleRepository.findByName("SUPPLIER")
+                        .orElseGet(() -> {
+                            // Tạo vai trò SUPPLIER nếu chưa tồn tại
+                            log.info("Role SUPPLIER chưa tồn tại, tiến hành tạo mới...");
+                            Role newRole = new Role();
+                            newRole.setName("SUPPLIER");
+                            return roleRepository.save(newRole);
+                        });
+
                 // Tạo người dùng mới với vai trò ADMIN
                 User user = User.builder()
                         .first_name("admin")
                         .last_name("admin")
                         .email("admin123@gmail.com")
-                        .avatar("D:\\myevent\\myevent-be\\myevent-be\\resourcres\\upload\\kkk.jpg")
+                        .avatar("/upload/kkk.jpg")
+                        .phone_number("0123456789")
                         .password(passwordEncoder.encode("admin"))
                         .role(adminRole) // Gán vai trò ADMIN cho người dùng
                         .build();
