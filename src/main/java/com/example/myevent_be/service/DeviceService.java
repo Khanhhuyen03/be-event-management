@@ -2,70 +2,88 @@ package com.example.myevent_be.service;
 
 
 import com.example.myevent_be.dto.request.DeviceRequest;
+import com.example.myevent_be.dto.request.DeviceTypeRequest;
 import com.example.myevent_be.dto.response.DeviceResponse;
+import com.example.myevent_be.dto.response.DeviceTypeResponse;
+import com.example.myevent_be.dto.response.PageResponse;
 import com.example.myevent_be.entity.Device;
+import com.example.myevent_be.entity.Device_Type;
+import com.example.myevent_be.entity.Event;
+import com.example.myevent_be.entity.EventType;
+import com.example.myevent_be.exception.AppException;
+import com.example.myevent_be.exception.ErrorCode;
 import com.example.myevent_be.exception.ResourceNotFoundException;
 import com.example.myevent_be.mapper.DeviceMapper;
+import com.example.myevent_be.mapper.PageMapper;
 import com.example.myevent_be.repository.DeviceRepository;
+import com.example.myevent_be.repository.DeviceTypeRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
+
 public class DeviceService {
 
-    private final DeviceRepository deviceRepository;
-    private final DeviceMapper deviceMapper;
+    DeviceRepository deviceRepository;
+    DeviceMapper deviceMapper;
+    DeviceTypeRepository deviceTypeRepository;
+    PageMapper pageMapper;
 
-    public DeviceService(DeviceRepository deviceRepository, DeviceMapper deviceMapper) {
-        this.deviceRepository = deviceRepository;
-        this.deviceMapper = deviceMapper;
-    }
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public DeviceResponse createDevice(DeviceRequest request) {
 
-    public DeviceResponse createDevice(DeviceRequest requestDTO) {
-        Device device = deviceMapper.toEntity(requestDTO);
-        device = deviceRepository.save(device);
+        Device device = deviceMapper.toDevice(request,deviceTypeRepository);
+
+        log.info("Received DeviceRequest: {}", request);
+        log.info("deviceTypeId: {}", request.getDeviceType_id());
+
+        deviceRepository.save(device);
         return deviceMapper.toResponse(device);
     }
 
-    public List<DeviceResponse> getAllDevices() {
-        return deviceRepository.findAll().stream()
-                .map(deviceMapper::toResponse)
-                .collect(Collectors.toList());
+    public PageResponse getDevices(int pageNo, int pageSize) {
+        int p=0;
+        if(pageNo>0){
+            p=pageNo-1;
+        }
+        Page<Device> page = deviceRepository.findAll(PageRequest.of(p, pageSize));
+        return pageMapper.toPageResponse(page,deviceMapper::toResponse);
     }
 
-    public DeviceResponse getDeviceById(String id) {
-        Device device = deviceRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Device not found with id: " + id));
+    public Device getDeviceById(String id) {
+        return deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Device not found with id: " + id));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public DeviceResponse updateDevice(DeviceRequest request, String id){
+        Device device = getDeviceById(id);
+
+        deviceMapper.updateDevice(device,request);
+
+        return deviceMapper.toResponse(deviceRepository.save(device));
+    }
+
+    public DeviceResponse getDevice(@PathVariable String id){
+        Device device = getDeviceById(id);
         return deviceMapper.toResponse(device);
     }
-
-    public DeviceResponse updateDevice(String id, DeviceRequest request) {
-        // Tìm thiết bị theo ID, nếu không có thì ném lỗi
-        Device existingDevice = deviceRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Device not found with id: " + id));
-
-        // Cập nhật thông tin từ request vào entity
-        existingDevice.setName(request.getName());
-        existingDevice.setDescription(request.getDescription()); // Thêm nếu cần
-        existingDevice.setImage(request.getImage()); // Thêm nếu cần
-//        existingDevice.setHourly_rental_fee(request.getHourlyRentalFee());
-        existingDevice.setQuantity(request.getQuantity());
-//        existingDevice.setUpdate_at(new Date());
-
-        // Lưu lại vào database
-        Device updatedDevice = deviceRepository.save(existingDevice);
-
-        // Trả về response DTO
-        return deviceMapper.toResponse(updatedDevice);
-    }
-
 
     public void deleteDevice(String id) {
-        Device device = deviceRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Device not found with id: " + id));
+        Device device = getDeviceById(id);
         deviceRepository.delete(device);
     }
 

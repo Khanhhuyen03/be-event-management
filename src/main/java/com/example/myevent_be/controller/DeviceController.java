@@ -1,56 +1,100 @@
 package com.example.myevent_be.controller;
 
 import com.example.myevent_be.dto.request.DeviceRequest;
-import com.example.myevent_be.dto.response.DeviceResponse;
+import com.example.myevent_be.dto.response.*;
+import com.example.myevent_be.entity.Device_Type;
 import com.example.myevent_be.service.DeviceService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/devices")
+@Validated
+@Slf4j
 @RequiredArgsConstructor
 public class DeviceController {
 
     private final DeviceService deviceService;
+    private static final String ERROR_MESSAGE = "errorMessage={}";
 
     // Lấy danh sách thiết bị
-    @GetMapping
-    public ResponseEntity<List<DeviceResponse>> getAllDevices() {
-        return ResponseEntity.ok(deviceService.getAllDevices());
+    @GetMapping("/list")
+    public ResponseData<PageResponse> getDevices(@RequestParam(defaultValue = "0", required = false) int pageNo,
+                                                     @Min(5) @RequestParam(defaultValue = "20", required = false) int pageSize) {
+        log.info("Request get devices, pageNo={}, pageSize={}", pageNo, pageSize);
+
+        try {
+            PageResponse<?> device = deviceService.getDevices(pageNo, pageSize);
+            return new ResponseData<>(HttpStatus.OK.value(), "success", device);
+        } catch (Exception e) {
+            log.error(ERROR_MESSAGE,e.getMessage(),e.getCause());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
     }
 
     // Lấy chi tiết thiết bị
     @GetMapping("/{id}")
-    public ResponseEntity<DeviceResponse> getDeviceById(@PathVariable String id) {
-        return ResponseEntity.ok(deviceService.getDeviceById(id));
+    public ResponseData<DeviceResponse> getDeviceById(@PathVariable String id) {
+        log.info("Request get device detail, deviceId={}", id);
+
+        try {
+            DeviceResponse device = deviceService.getDevice(id);
+            return new ResponseData<>(HttpStatus.OK.value(), "device", device);
+        } catch (Exception e) {
+            log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+        }
     }
 
-    // Chỉ Admin mới được thêm thiết bị
-    @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping
-    public ResponseEntity<DeviceResponse> createDevice(@RequestBody DeviceRequest request) {
-        return ResponseEntity.ok(deviceService.createDevice(request));
+
+    //@PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping(value = "/new")
+    public ResponseData<DeviceResponse> createDevice(@Valid @RequestBody DeviceRequest request) {
+        log.info("Request add Device, {}",request.getName());
+
+        try {
+            DeviceResponse deviceResponse = deviceService.createDevice(request);
+            return new ResponseData<>(HttpStatus.CREATED.value(), "Device added successfully",deviceResponse);
+        }catch (Exception e){
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Device added fail");
+        }
     }
 
     // Chỉ Admin mới được cập nhật thiết bị
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<DeviceResponse> updateDevice(
-            @PathVariable String id,
-            @RequestBody DeviceRequest deviceRequest) {
-        DeviceResponse updatedDevice = deviceService.updateDevice(id, deviceRequest);
-        return ResponseEntity.ok(updatedDevice);
+    public ResponseData<Void> updateDevice(@PathVariable String id, @Valid @RequestBody DeviceRequest request){
+        log.info("Request update DeviceId={}", id);
+        try {
+            deviceService.updateDevice(request,id);
+            return new ResponseData<>(HttpStatus.ACCEPTED.value(), "Device updated successfully");
+    } catch (Exception e) {
+        log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
+        return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Update device fail");
+    }
     }
 
     // Chỉ Admin mới được xóa thiết bị
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDevice(@PathVariable String id) {
-        deviceService.deleteDevice(id);
-        return ResponseEntity.noContent().build();
+    public ResponseData<Void> deleteDevice(@PathVariable String id) {
+        log.info("Request delete deviceId={}", id);
+
+        try {
+            deviceService.deleteDevice(id);
+            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "Device deleted successfully");
+        } catch (Exception e) {
+            log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Delete device fail");
+        }
     }
 }
