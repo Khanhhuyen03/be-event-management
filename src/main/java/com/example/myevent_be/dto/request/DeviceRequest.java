@@ -11,4 +11,5 @@ public class DeviceRequest {
     private BigDecimal hourlyRentalFee;
     private int quantity;
     private String deviceType_id;
+    private String place;
 }
