@@ -10,4 +10,5 @@ public class DeviceRequest {
     private String image;
     private BigDecimal hourlyRentalFee;
     private int quantity;
+    private String deviceType_id;
 }
