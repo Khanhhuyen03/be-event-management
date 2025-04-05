@@ -39,6 +39,7 @@ public interface DeviceMapper {
         device.setImage( request.getImage() );
         device.setHourly_rental_fee(request.getHourlyRentalFee());
         device.setQuantity( request.getQuantity() );
+        device.setPlace(request.getPlace());
         return device;
     }
 
@@ -58,6 +59,7 @@ public interface DeviceMapper {
         deviceResponse.image( device.getImage() );
         deviceResponse.quantity( device.getQuantity() );
         deviceResponse.hourlyRentalFee(device.getHourly_rental_fee());
+        deviceResponse.place(device.getPlace());
         deviceResponse.deviceType_id(device.getDevice_type().getId());
 
         return deviceResponse.build();

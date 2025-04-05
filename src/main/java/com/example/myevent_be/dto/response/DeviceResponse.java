@@ -16,4 +16,5 @@ public class DeviceResponse {
     private BigDecimal hourlyRentalFee;
     private int quantity;
     private String deviceType_id;
+    private String place;
 }
