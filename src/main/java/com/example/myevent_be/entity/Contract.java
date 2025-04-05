@@ -1,5 +1,6 @@
 package com.example.myevent_be.entity;
 
+import com.example.myevent_be.enums.ContractStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,8 @@ public class Contract {
     @JoinColumn(name = "customer_id")
     Customer customer;
 
-    Enum status;
+    @Enumerated(EnumType.STRING)
+    ContractStatus status;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

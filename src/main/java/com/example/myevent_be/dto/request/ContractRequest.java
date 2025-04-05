@@ -2,20 +2,17 @@ package com.example.myevent_be.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.math.BigDecimal;
+import org.hibernate.validator.constraints.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DeviceRequest {
+public class ContractRequest {
     String name;
-    String description;
-    String image;
-    BigDecimal hourlyRentalFee;
-    int quantity;
-    private String deviceType_id;
-    private String place;
+    UUID paymentIntentId;
+    String rentalId;
+    String customerId;
+    String status;
 }
