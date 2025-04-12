@@ -1,9 +1,12 @@
 package com.example.myevent_be.enums;
 
 public enum ContractStatus {
-    PENDING,    // Đang chờ xử lý
-    APPROVED,   // Đã được phê duyệt
-    REJECTED,   // Đã bị từ chối
-    COMPLETED,  // Đã hoàn thành
-    CANCELLED   // Đã hủy
-} 
+    DRAFT,    // Nháp
+    DEPOSITED,   // đã đặt cọc
+    PROGRESS,   //  thực hiện
+    PENDING,    // Đang chờ
+    PENDING_PAYMENT,  // Chờ thanh toán
+    COMPLETED,// Hoàn thành
+    CANCELLED,//Đã huỷ
+    CANCELLED_BY_ADMIN// Đã hủy bởi admin
+}

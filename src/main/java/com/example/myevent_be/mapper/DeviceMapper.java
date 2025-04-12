@@ -51,18 +51,16 @@ public interface DeviceMapper {
             return null;
         }
 
-        DeviceResponse.DeviceResponseBuilder deviceResponse = DeviceResponse.builder();
-
-        deviceResponse.id( device.getId() );
-        deviceResponse.name( device.getName() );
-        deviceResponse.description( device.getDescription() );
-        deviceResponse.image( device.getImage() );
-        deviceResponse.quantity( device.getQuantity() );
-        deviceResponse.hourlyRentalFee(device.getHourly_rental_fee());
-        deviceResponse.place(device.getPlace());
-        deviceResponse.deviceType_id(device.getDevice_type().getId());
-
-        return deviceResponse.build();
+        return DeviceResponse.builder()
+                .id(device.getId())
+                .name(device.getName())
+                .description(device.getDescription())
+                .image(device.getImage())
+                .quantity(device.getQuantity())
+                .hourlyRentalFee(device.getHourly_rental_fee())
+                .place(device.getPlace())
+                .deviceType_id(device.getDevice_type().getId())
+                .build();
     }
     void updateDevice(@MappingTarget Device device, DeviceRequest request);
 }

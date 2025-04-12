@@ -31,7 +31,9 @@ public class Contract {
     Rental rental;
 
     String name;
-    UUID payment_intent_id;
+
+    @Column(name = "payment_intent_id")
+    UUID paymentIntentId;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
