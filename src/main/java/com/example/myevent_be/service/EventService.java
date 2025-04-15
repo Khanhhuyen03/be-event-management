@@ -71,6 +71,13 @@ public class EventService {
                 () -> new RuntimeException("Event not found")
         );
 
+        // Lấy EventType từ DB nếu có event_type_id
+        if (request.getEvent_type_id() != null) {
+            EventType eventType = eventTypeRepository.findById(request.getEvent_type_id())
+                    .orElseThrow(() -> new AppException(ErrorCode.EVENT_TYPE_NOT_FOUND));
+            event.setEvent_type(eventType);
+        }
+
         eventMapper.updateEvent(event, request);
 
         return eventMapper.toEventResponse(eventRepository.save(event));

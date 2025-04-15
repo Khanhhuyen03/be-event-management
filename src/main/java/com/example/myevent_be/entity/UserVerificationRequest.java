@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 @Builder
 @NoArgsConstructor
-@Table(name = "user_verification_request")
+@Table(name = "user_verification_requests")
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
@@ -20,17 +20,33 @@ public class UserVerificationRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
+
+    @Column(name = "email")
     String email;
+
+    @Column(name = "data")
     String data;
+
+    @Column(name = "code")
     String code;
-    Date expiration_time;
-    Enum type;
+
+    @Column(name = "token")
+    String token;
+
+    @Column(name = "expiration_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    Date expirationTime;
+
+    @Column(name = "type")
+    String type;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    Date created_at;
+    @Column(name = "created_at")
+    Date createdAt;
 
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    Date update_at;
+    @Column(name = "updated_at")
+    Date updatedAt;
 }

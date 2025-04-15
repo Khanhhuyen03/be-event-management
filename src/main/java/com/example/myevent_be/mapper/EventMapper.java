@@ -17,5 +17,6 @@ public interface EventMapper {
     @Mapping(source = "event_type", target = "eventTypeName", qualifiedByName = "eventTypeToString")
     EventResponse toEventResponse(Event event);
 
+    @Mapping(target = "event_type", ignore = true) // Bỏ qua mapping event_type vì đã xử lý trong service
     void updateEvent(@MappingTarget Event event, EventUpdateRequest request);
 }
