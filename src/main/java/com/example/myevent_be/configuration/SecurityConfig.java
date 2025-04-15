@@ -23,7 +23,8 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_ENPOINTS={
             "/users/signing-up", "/auth/login", "/auth/introspect", "/event", "/event/**",
-            "/auth/logout"
+            "/auth/logout", "devices","devices/**","deviceType","deviceType/**","services",
+            "services/**"
     };
 
     @Value("${jwt.signerKey}")

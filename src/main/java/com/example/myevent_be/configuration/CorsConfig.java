@@ -15,7 +15,7 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:57191")); // Cho phép FE truy cập
+        config.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:58228")); // Cho phép FE truy cập
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true); // Nếu cần gửi cookie/token

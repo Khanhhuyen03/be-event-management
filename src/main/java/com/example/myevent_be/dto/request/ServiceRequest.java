@@ -18,4 +18,5 @@ public class ServiceRequest {
     BigDecimal hourly_salary;
     int quantity;
     String place;
+    String userID;
 }

@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Builder
 @Getter
@@ -19,4 +20,7 @@ public class ServiceResponse {
     BigDecimal hourly_salary;
     int quantity;
     String place;
+    String userID;
+    Date created_at;
+    Date update_at;
 }
