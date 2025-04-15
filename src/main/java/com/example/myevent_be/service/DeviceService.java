@@ -10,6 +10,7 @@ import com.example.myevent_be.mapper.DeviceMapper;
 import com.example.myevent_be.mapper.PageMapper;
 import com.example.myevent_be.repository.DeviceRepository;
 import com.example.myevent_be.repository.DeviceTypeRepository;
+import com.example.myevent_be.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,11 +32,12 @@ public class DeviceService {
     DeviceMapper deviceMapper;
     DeviceTypeRepository deviceTypeRepository;
     PageMapper pageMapper;
+    UserRepository userRepository;
 
     @PreAuthorize("hasAuthority('ADMIN')")
     public DeviceResponse createDevice(DeviceRequest request) {
 
-        Device device = deviceMapper.toDevice(request,deviceTypeRepository);
+        Device device = deviceMapper.toDevice(request,deviceTypeRepository,userRepository);
 
         log.info("Received DeviceRequest: {}", request);
         log.info("deviceTypeId: {}", request.getDeviceType_id());
