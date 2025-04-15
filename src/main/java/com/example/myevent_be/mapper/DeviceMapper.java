@@ -1,19 +1,12 @@
 package com.example.myevent_be.mapper;
 
 import com.example.myevent_be.dto.request.DeviceRequest;
-import com.example.myevent_be.dto.request.DeviceTypeRequest;
 import com.example.myevent_be.dto.response.DeviceResponse;
 import com.example.myevent_be.entity.Device;
 import com.example.myevent_be.entity.Device_Type;
-import com.example.myevent_be.entity.EventType;
-import com.example.myevent_be.exception.AppException;
-import com.example.myevent_be.exception.ErrorCode;
 import com.example.myevent_be.exception.ResourceNotFoundException;
 import com.example.myevent_be.repository.DeviceTypeRepository;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 
 @Mapper(componentModel = "spring")
