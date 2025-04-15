@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
@@ -25,8 +26,9 @@ public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-
+    @Nationalized
     String name;
+    @Nationalized
     String description;
     String image;
     BigDecimal hourly_rental_fee;

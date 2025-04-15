@@ -6,21 +6,42 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
-import java.util.List;
-
 @Configuration
 public class CorsConfig {
+
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-
-        config.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:57191")); // Cho phép FE truy cập
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setAllowCredentials(true); // Nếu cần gửi cookie/token
-
+        
+        // Allow specific origins
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin("http://127.0.0.1:5500");
+        config.addAllowedOrigin("http://localhost:5500");
+        
+        // Allow credentials
+        config.setAllowCredentials(true);
+        
+        // Allow specific HTTP methods
+        config.addAllowedMethod("*");
+        
+        // Allow specific headers
+        config.addAllowedHeader("*");
+        
+        // Expose headers
+        config.addExposedHeader("Authorization");
+        config.addExposedHeader("Content-Type");
+        config.addExposedHeader("Accept");
+        config.addExposedHeader("Origin");
+        config.addExposedHeader("Access-Control-Request-Method");
+        config.addExposedHeader("Access-Control-Request-Headers");
+        
+        // Set max age
+        config.setMaxAge(3600L);
+        
+        // Apply this configuration to all paths
         source.registerCorsConfiguration("/**", config);
+        
         return new CorsFilter(source);
     }
 }
