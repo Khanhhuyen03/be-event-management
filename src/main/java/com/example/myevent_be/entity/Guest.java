@@ -26,7 +26,10 @@ public class Guest {
     EmailSendLog emailSendLog;
 
     String email;
-    Enum status;
+    
+    @Column(name = "status")
+    String status;
+    
     String error;
 
     Date created_at;

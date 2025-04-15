@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserVerificationRequestRepository extends JpaRepository<UserVerificationRequest, String > {
-    Optional<UserVerificationRequest> findByEmailAndCode(String email, String code);
+public interface UserVerificationRequestRepository extends JpaRepository<UserVerificationRequest, String> {
+    Optional<UserVerificationRequest> findByCode(String code);
+    void deleteByEmail(String email);
 }

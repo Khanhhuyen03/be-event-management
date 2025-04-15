@@ -3,7 +3,6 @@ package com.example.myevent_be.configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,25 +14,30 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-
-@Configuration
+@Configuration  
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENPOINTS={
-            "/users/signing-up", "/auth/login", "/auth/introspect", "/event", "/event/**",
-            "/auth/logout"
+    private final String[] PUBLIC_ENDPOINTS = {
+            "/users/signing-up",  "/users/**", "/auth/login", "/auth/introspect", "/event", "/event/**",
+            "/auth/logout", "/api/verification/verify", "/api/v1/FileUpload/**",
+            "/auth/forgot-password", "/auth/verify-code", "/auth/reset-password",
+            "/auth/verify-pass-code"
     };
 
     @Value("${jwt.signerKey}")
     private String signerKey;
 
-    CustomJwtDeCoder customJwtDeCoder;
+    private final CustomJwtDeCoder customJwtDeCoder;
+
+    public SecurityConfig(CustomJwtDeCoder customJwtDeCoder) {
+        this.customJwtDeCoder = customJwtDeCoder;
+    }
 
     @Bean
     PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder(10);
+        return new BCryptPasswordEncoder();
     }
 
     JwtAuthenticationConverter jwtAuthenticationConverter(){
@@ -46,24 +50,16 @@ public class SecurityConfig {
         return jwtAuthenticationConverter;
     }
 
-//    @Bean
-//    JwtDecoder jwtDecoder(){
-//        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-//
-//        return NimbusJwtDecoder.withSecretKey(secretKeySpec).macAlgorithm(MacAlgorithm.HS512).build();
-//    }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
-                .requestMatchers(PUBLIC_ENPOINTS)
+                .requestMatchers(PUBLIC_ENDPOINTS)
                 .permitAll()
                 .requestMatchers("/event", "/event/**").permitAll()
                 .requestMatchers("/event-type/**").hasAuthority("ADMIN") // Chỉ ADMIN mới được tạo event type
                 .anyRequest()
                 .authenticated());
 
-//        httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer.decoder(jwtDecoder())));
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDeCoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
@@ -74,4 +70,3 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 }
-

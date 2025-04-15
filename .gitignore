@@ -31,3 +31,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/src/main/java/com/example/myevent_be/configuration/RequestFilter.java
