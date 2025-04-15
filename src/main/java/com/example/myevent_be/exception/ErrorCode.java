@@ -18,10 +18,6 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "Unauthorized", HttpStatus.UNAUTHORIZED),
     EVENTTYPE_EXISTED(1008, "Event type existed", HttpStatus.BAD_REQUEST),
     EVENT_TYPE_NOT_FOUND(1009, "Event type not found", HttpStatus.BAD_REQUEST),
-    EMAIL_NOT_FOUND(1010, "Email not found", HttpStatus.NOT_FOUND),
-    INVALID_TOKEN(1011, "Invalid or expired reset token", HttpStatus.BAD_REQUEST),
-    TOKEN_EXPIRED(1012, "Reset token has expired", HttpStatus.BAD_REQUEST),
-    PASSWORD_MISMATCH(1013, "New password and confirm password do not match", HttpStatus.BAD_REQUEST)
     ;
 
     int code;

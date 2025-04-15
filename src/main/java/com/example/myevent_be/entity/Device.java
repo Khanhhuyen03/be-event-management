@@ -47,6 +47,6 @@ public class Device {
     Set<DeviceRental> deviceRentals;
 
     @ManyToOne
-    @JoinColumn(name = "device_type_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "device_type_id", referencedColumnName = "id", nullable = false  , columnDefinition = "VARCHAR(255) DEFAULT 'DEFAULT_TYPE_ID'")
     Device_Type device_type;
 }

@@ -1,21 +1,21 @@
 package com.example.myevent_be.dto.request;
 
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DeviceRequest {
+public class ServiceRequest {
     String name;
     String description;
     String image;
-    BigDecimal hourlyRentalFee;
+    BigDecimal hourly_salary;
     int quantity;
-    private String deviceType_id;
-    private String place;
+    String place;
 }
