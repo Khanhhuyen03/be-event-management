@@ -18,6 +18,11 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "Unauthorized", HttpStatus.UNAUTHORIZED),
     EVENTTYPE_EXISTED(1008, "Event type existed", HttpStatus.BAD_REQUEST),
     EVENT_TYPE_NOT_FOUND(1009, "Event type not found", HttpStatus.BAD_REQUEST),
+    CONTRACT_ALREADY_EXISTED(1010, "Contract already exists with this Payment Intent ID", HttpStatus.BAD_REQUEST),
+    CONTRACT_NOT_FOUND(1011,"CONTRACT NOT FOUND",HttpStatus.BAD_REQUEST),
+    EMAIL_NOT_FOUND(1012,"EMAIL NOT FOUND",HttpStatus.BAD_REQUEST),
+    INVALID_TOKEN(1015,"invalid token ",HttpStatus.BAD_REQUEST),
+    TOKEN_EXPIRED(1016,"token expired ",HttpStatus.BAD_REQUEST)
     ;
 
     int code;
