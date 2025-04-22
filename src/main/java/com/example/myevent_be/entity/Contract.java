@@ -1,5 +1,6 @@
 package com.example.myevent_be.entity;
 
+import com.example.myevent_be.enums.ContractStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,14 +33,13 @@ public class Contract {
 
     @Nationalized
     String name;
-    UUID payment_intent_id;
+
+    @Column(name = "payment_intent_id")
+    UUID paymentIntentId;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
     Customer customer;
-
-    @Column(name = "status")
-    String status;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

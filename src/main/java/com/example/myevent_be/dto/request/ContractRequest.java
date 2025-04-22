@@ -1,22 +1,23 @@
 package com.example.myevent_be.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DeviceRequest {
+public class ContractRequest {
     String name;
-    String description;
-    String image;
-    BigDecimal hourlyRentalFee;
-    int quantity;
-    String deviceType_id;
-    String place;
-    String userID;
+    
+    @NotNull
+    UUID paymentIntentId;
+    
+    String rentalId;
+    String customerId;
+    String status;
 }

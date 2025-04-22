@@ -32,4 +32,13 @@ public class EventCreateRequest {
     
     @NotBlank(message = "eventType_id is required")
     String eventType_id;
+
+    //xx"name": "Test Event",x
+    // x   "description": "This is a test event",
+    //  x  "detail": "Event details",
+    //   x "event_format": true,
+    //   x "is_template": false,
+    //   x "eventType_id": "some-uuid-here", // Copy id từ response của bước tạo EventType
+    //   x "online_link": "https://example.com",
+    //   x "invitation_link": "https://example.com/invite"
 }

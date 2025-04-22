@@ -1,13 +1,16 @@
 package com.example.myevent_be.dto.response;
 
-import lombok.*;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.util.Date;
 
+@Data
 @Builder
-@Getter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class DeviceResponse {
     private String id;
     private String name;
@@ -15,6 +18,9 @@ public class DeviceResponse {
     private String image;
     private BigDecimal hourlyRentalFee;
     private int quantity;
-    private String deviceType_id;
     private String place;
+    private String deviceType_id;
+    private String userID;
+    private Date created_at;
+    private Date update_at;
 }
