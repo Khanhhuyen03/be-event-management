@@ -11,14 +11,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:5500"}, allowCredentials = "true")
+@CrossOrigin(origins = {"http://localhost:3000", "http://127.0.0.1:5500",
+        "http://localhost:8080"}, allowCredentials = "true")
 @RequestMapping("/api/v1/FileUpload")
 public class FileUploadController {
 
@@ -48,7 +46,7 @@ public class FileUploadController {
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(new ApiResponse(9999, "File not found: " + fileName, null));
             }
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_JPEG);
             headers.setContentLength(bytes.length);

@@ -79,8 +79,55 @@ public class EventController {
         return "Event has been deleted";
     }
 
-    @PatchMapping("/{eventId}")
-    EventResponse updateEvent(@PathVariable String eventId, @RequestBody EventUpdateRequest request){
-        return eventService.updateEvent(request, eventId);
+//    @PatchMapping("/{eventId}")
+//    EventResponse updateEvent(@PathVariable String eventId, @RequestBody EventUpdateRequest request){
+//        return eventService.updateEvent(request, eventId);
+//    }
+
+    @PatchMapping(value = "/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ApiResponse<EventResponse> updateEvent(
+            @PathVariable String eventId,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart("event") @Valid EventUpdateRequest request) {
+        log.info("Received update event request: {}", request);
+//        if (file != null) {
+//            log.info("File details - Name: {}, Size: {}, ContentType: {}",
+//                    file.getOriginalFilename(), file.getSize(), file.getContentType());
+//            // Lưu file ảnh mới
+//            String fileName = storageService.storeFile(file);
+//            log.info("File stored successfully with name: {}", fileName);
+//            // Cập nhật trường img trong request
+//            request.setImg(fileName);
+//        }
+//        if (file != null) {
+//            String fileName = storageService.storeFile(file);
+//            request.setImg(fileName);
+//        }
+//
+//        EventResponse response = eventService.updateEvent(request, eventId);
+//        log.info("Event updated successfully: {}", response);
+//        return ApiResponse.<EventResponse>builder()
+//                .result(response)
+//                .build();
+        try {
+            // Store the uploaded file
+            String fileName = storageService.storeFile(file);
+            log.info("File stored successfully with name: {}", fileName);
+
+            // Set the image path in the request
+            request.setImg(fileName);
+
+            EventResponse response = eventService.updateEvent(request, eventId);
+            log.info("Event created successfully: {}", response);
+            return ApiResponse.<EventResponse>builder()
+                    .result(response)
+                    .build();
+        } catch (Exception e) {
+            log.error("Error creating event: ", e);
+            if (e instanceof AppException) {
+                throw e;
+            }
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
     }
 }

@@ -39,7 +39,6 @@ public class Contract {
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    @Nationalized
     Customer customer;
 
     @CreationTimestamp

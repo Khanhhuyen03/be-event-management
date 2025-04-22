@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .requestMatchers(PUBLIC_ENDPOINTS)
                 .permitAll()
                 .requestMatchers("/event", "/event/**").permitAll()
-                .requestMatchers("/event-type/**").hasAuthority("ADMIN") // Chỉ ADMIN mới được tạo event type
+                .requestMatchers("/event-type/**").hasAnyAuthority("MANAGER", "ADMIN") // Chỉ ADMIN mới được tạo event type
                 .anyRequest()
                 .authenticated());
 
