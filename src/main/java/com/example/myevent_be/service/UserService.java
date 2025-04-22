@@ -6,31 +6,35 @@ import com.example.myevent_be.dto.request.UserUpdateRequest;
 import com.example.myevent_be.dto.response.UserResponse;
 import com.example.myevent_be.entity.Role;
 import com.example.myevent_be.entity.User;
-import com.example.myevent_be.enums.VerificationType;
 import com.example.myevent_be.exception.AppException;
 import com.example.myevent_be.exception.ErrorCode;
 import com.example.myevent_be.mapper.UserMapper;
 import com.example.myevent_be.repository.RoleRepository;
 import com.example.myevent_be.repository.UserRepository;
 import com.example.myevent_be.repository.PasswordResetTokenRepository;
-import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
+import java.util.Arrays;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -39,6 +43,24 @@ public class UserService {
     private final UserVerificationService userVerificationService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
+    
+    @Value("${file.upload-dir:${user.home}/uploads}")
+    private String uploadDir;
+
+    // Constructor for final fields
+    public UserService(UserRepository userRepository, 
+                      UserMapper userMapper, 
+                      RoleRepository roleRepository, 
+                      PasswordEncoder passwordEncoder, 
+                      UserVerificationService userVerificationService, 
+                      PasswordResetTokenRepository passwordResetTokenRepository) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.userVerificationService = userVerificationService;
+        this.passwordResetTokenRepository = passwordResetTokenRepository;
+    }
 
     @Transactional
     public UserResponse createUser(UserCreateRequest request) {
@@ -67,9 +89,16 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public List<UserResponse> getUsers() {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+    }
+
+    @PreAuthorize("hasAuthority('MANAGER')")
+    public List<UserResponse> getUserByRole() {
+        List<Role> roles = roleRepository.findByNameIn(Arrays.asList("USER", "SUPPLIER"));
+        return userRepository.findByRoleIn(roles)
+                .stream().map(userMapper::toUserResponse).toList();
     }
 
     public UserResponse getUser(String id) {
@@ -78,50 +107,99 @@ public class UserService {
                 .findById(id).orElseThrow(() -> new RuntimeException("User not found")));
     }
 
-//    @Transactional
-    public UserResponse updateUser(String id, UserUpdateRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, 
-                        "Không tìm thấy người dùng."
-                ));
-
-        userMapper.updateUser(user, request);
-        if (request.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
-
-        return userMapper.toUserResponse(userRepository.save(user));
-    }
-
-    public UserResponse resetPassword(String id, ResetPasswordRequest2 request2){
+    @Transactional
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'SUPPLIER', 'MANAGER')")
+    public UserResponse updateUser(String id, MultipartFile avatar, String data)
+            throws IOException {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Không tìm thấy người dùng."
                 ));
 
-        userMapper.resetPssword(user, request2);
-        if (request2.getOldPassword() != null) {
-            user.setPassword(passwordEncoder.encode(request2.getConfirmPassword()));
+        // Parse JSON data từ FormData
+        ObjectMapper objectMapper = new ObjectMapper();
+        UserUpdateRequest request = null;
+        if (data != null && !data.isEmpty()) {
+            request = objectMapper.readValue(data, UserUpdateRequest.class);
+            // Cập nhật các trường từ request
+            userMapper.updateUser(user, request);
+            // Cập nhật password nếu có
+            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
+            }
         }
 
+        // Xử lý file ảnh nếu có
+        if (avatar != null && !avatar.isEmpty()) {
+            String fileName = UUID.randomUUID() + "_" + avatar.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir, fileName);
+            Files.createDirectories(filePath.getParent());
+            avatar.transferTo(filePath);
+//            // Lưu đường dẫn đầy đủ
+//            String avatarUrl = "/api/v1/FileUpload/files/" + fileName;
+//            user.setAvatar(avatarUrl);
+        }
+
+        // Lưu user và trả về response
+        User updatedUser = userRepository.save(user);
+        return userMapper.toUserResponse(updatedUser);
+    }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'SUPPLIER', 'MANAGER')")
+    public UserResponse resetPassword(String id, ResetPasswordRequest2 request2) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Không tìm thấy người dùng."
+                ));
+
+        // Kiểm tra dữ liệu đầu vào
+        if (request2.getOldPassword() == null || request2.getNewPassword() == null ||
+                request2.getConfirmPassword() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mật khẩu cũ, mật khẩu mới và xác nhận mật khẩu không được để trống");
+        }
+
+        // Kiểm tra mật khẩu mới và xác nhận mật khẩu có khớp không
+        if (!request2.getNewPassword().equals(request2.getConfirmPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mật khẩu mới và xác nhận mật khẩu không khớp");
+        }
+
+        // Kiểm tra mật khẩu cũ
+        if (!passwordEncoder.matches(request2.getOldPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mật khẩu cũ không đúng");
+        }
+
+        // Mã hóa mật khẩu mới
+        String encodedNewPassword = passwordEncoder.encode(request2.getNewPassword());
+        user.setPassword(encodedNewPassword);
+
+        // Lưu người dùng
+        userRepository.save(user);
+
+        // Kiểm tra lại sau khi lưu
+        User updatedUser = userRepository.findById(id).orElse(null);
+        if (updatedUser == null || !updatedUser.getPassword().equals(encodedNewPassword)) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Lỗi khi cập nhật mật khẩu");
+        }
+        System.out.println("Password after save: " + updatedUser.getPassword());
         return userMapper.toUserResponse(userRepository.save(user));
+
     }
 
     @Transactional
     public void deleteUser(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-                
+
         // Delete associated password reset tokens first
         passwordResetTokenRepository.deleteByUser(user);
-        
+
         // Now delete the user
         userRepository.delete(user);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public UserResponse updateUserRole(String userId, String roleName) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -134,21 +212,4 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    @Transactional
-    public void verifyEmail(String email, String code) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, 
-                        "Không tìm thấy người dùng."
-                ));
-        
-        if (userVerificationService.verifyCode(code)) {
-            log.info("Email verified successfully for user: {}", email);
-        } else {
-            throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST, 
-                "Mã xác nhận không hợp lệ hoặc đã hết hạn."
-            );
-        }
-    }
 }

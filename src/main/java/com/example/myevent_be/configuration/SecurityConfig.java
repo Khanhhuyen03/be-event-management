@@ -21,9 +21,10 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {
             "/users/signing-up",  "/users/**", "/auth/login", "/auth/introspect", "/event", "/event/**",
-            "/auth/logout", "/api/verification/verify", "/api/v1/FileUpload/**",
+            "/auth/logout", "/api/verification/verify", "/api/v1/FileUpload/files/**",
             "/auth/forgot-password", "/auth/verify-code", "/auth/reset-password",
-            "/auth/verify-pass-code"
+            "/auth/verify-pass-code", "devices","devices/**","deviceType","deviceType/**","services",
+            "services/**"
     };
 
     @Value("${jwt.signerKey}")
@@ -56,7 +57,7 @@ public class SecurityConfig {
                 .requestMatchers(PUBLIC_ENDPOINTS)
                 .permitAll()
                 .requestMatchers("/event", "/event/**").permitAll()
-                .requestMatchers("/event-type/**").hasAuthority("ADMIN") // Chỉ ADMIN mới được tạo event type
+                .requestMatchers("/event-type/**").hasAnyAuthority("MANAGER", "ADMIN") // Chỉ ADMIN mới được tạo event type
                 .anyRequest()
                 .authenticated());
 
