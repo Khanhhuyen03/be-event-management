@@ -1,19 +1,22 @@
 package com.example.myevent_be.service;
 
 import com.example.myevent_be.dto.request.AuthenticationRequest;
+import com.example.myevent_be.dto.request.ForgetPasswordRequest;
 import com.example.myevent_be.dto.request.IntrospectRequest;
 import com.example.myevent_be.dto.request.LogoutRequest;
 import com.example.myevent_be.dto.response.AuthenticationResponse;
 import com.example.myevent_be.dto.response.IntrospectResponse;
-import com.example.myevent_be.dto.response.UserResponse;
 import com.example.myevent_be.entity.Role;
 import com.example.myevent_be.entity.Token;
 import com.example.myevent_be.entity.User;
+import com.example.myevent_be.entity.UserVerificationRequest;
 import com.example.myevent_be.exception.AppException;
 import com.example.myevent_be.exception.ErrorCode;
 import com.example.myevent_be.mapper.UserMapper;
+import com.example.myevent_be.repository.PasswordResetTokenRepository;
 import com.example.myevent_be.repository.TokenRepository;
 import com.example.myevent_be.repository.UserRepository;
+import com.example.myevent_be.repository.UserVerificationRequestRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -46,6 +49,9 @@ public class AuthenticationService {
     UserRepository userRepository;
     TokenRepository tokenRepository;
     UserMapper userMapper;
+    UserVerificationRequestRepository verificationRequestRepository;
+    PasswordResetTokenRepository passwordResetTokenRepository;
+
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -181,17 +187,19 @@ public class AuthenticationService {
 
             String jit = signToken.getJWTClaimsSet().getJWTID();
             Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
-
-//            Token token = Token.builder().id(jit).last_date(expiryTime).build();
-
-//            tokenRepository.save(token);
+            String email = signToken.getJWTClaimsSet().getSubject();
 
             // Kiểm tra token có tồn tại trước khi cập nhật
             Token token = tokenRepository.findById(jit)
-                    .orElseGet(() -> Token.builder().id(jit).build());
+                    .orElseGet(() -> Token.builder()
+                            .id(jit)
+                            .email(email)
+                            .access_token(request.getToken())
+                            .build());
 
             token.setLast_date(expiryTime);
             tokenRepository.save(token);
+            log.info("Saved logout token for user: {}", email);
         } catch (AppException e) {
             log.info("Token already expired");
         }
@@ -203,4 +211,10 @@ public class AuthenticationService {
         }
     }
 
+//    public boolean verifyResetCode(String code) {
+//        return passwordResetTokenRepository
+//                .findByCode(code)
+//                .filter(t -> !t.getExpiryDate().before(new Date()))
+//                .isPresent();
+//    }
 }

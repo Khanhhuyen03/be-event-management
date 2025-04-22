@@ -2,15 +2,19 @@ package com.example.myevent_be.exception;
 
 import com.example.myevent_be.dto.response.ApiResponse;
 import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MultipartException;
 
 import java.nio.file.AccessDeniedException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -18,12 +22,58 @@ public class GlobalExceptionHandler {
     private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handlingRuntimeExceptioin(Exception exception){
+    ResponseEntity<ApiResponse> handlingRuntimeException(Exception exception){
         exception.printStackTrace(); // Log lỗi để debug
         ApiResponse apiResponse = new ApiResponse();
-
+        
+        // Log chi tiết hơn về exception
+        String errorMessage = String.format("Exception type: %s, Message: %s", 
+            exception.getClass().getName(), 
+            exception.getMessage());
+        
         apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
-        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
+        apiResponse.setMessage(errorMessage);
+
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    ResponseEntity<ApiResponse> handleValidationException(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error -> 
+            errors.put(error.getField(), error.getDefaultMessage())
+        );
+        
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("Validation failed")
+                .result(errors)
+                .build();
+
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    @ExceptionHandler(value = MultipartException.class)
+    ResponseEntity<ApiResponse> handleMultipartException(MultipartException ex) {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("File upload error: " + ex.getMessage())
+                .build();
+
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    ResponseEntity<ApiResponse> handleConstraintViolationException(ConstraintViolationException ex) {
+        String violations = ex.getConstraintViolations()
+                .stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(", "));
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("Validation failed: " + violations)
+                .build();
 
         return ResponseEntity.badRequest().body(apiResponse);
     }
@@ -31,7 +81,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = ResourceNotFoundException.class)
     ResponseEntity<ApiResponse> handleResourceNotFoundException(ResourceNotFoundException exception) {
         ApiResponse apiResponse = ApiResponse.builder()
-                .code(HttpStatus.NOT_FOUND.value())  // HTTP 404
+                .code(HttpStatus.NOT_FOUND.value())
                 .message(exception.getMessage())
                 .build();
 
@@ -59,36 +109,6 @@ public class GlobalExceptionHandler {
                         .message(errorCode.getMessage())
                         .build()
         );
-    }
-
-    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    ResponseEntity<ApiResponse> handlingValidattion(MethodArgumentNotValidException exception){
-//        String enumkey = exception.getFieldError().getDefaultMessage();
-        String enumkey = exception.getFieldError() != null ? exception.getFieldError().getDefaultMessage() : "INVALID_INPUT";
-
-        ErrorCode errorCode = ErrorCode.INVALID_KEY;
-        Map<String, Object> attribute = null;
-        try {
-            errorCode = ErrorCode.valueOf(enumkey);
-
-            var constrainViolation = exception.getBindingResult().getAllErrors().stream()
-                    .findFirst()
-                    .map(error -> ((ConstraintViolation<?>) error.unwrap(ConstraintViolation.class)))
-                    .orElse(null);
-            if (constrainViolation != null){
-                attribute = constrainViolation.getConstraintDescriptor().getAttributes();
-            }
-        }
-        catch (IllegalArgumentException e){
-        }
-        ApiResponse apiResponse = new ApiResponse();
-
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
-        apiResponse.setMessage(
-                Objects.nonNull(attribute) ? mapAttribute(errorCode.getMessage(), attribute) : errorCode.getMessage());
-
-        return ResponseEntity.badRequest().body(apiResponse);
     }
 
     private String mapAttribute(String message, Map<String, Object> attribute){
