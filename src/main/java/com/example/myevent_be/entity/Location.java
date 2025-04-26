@@ -32,6 +32,7 @@ public class Location {
     String description;
     String image;
     BigDecimal hourly_rental_fee;
+    String address;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -43,4 +44,8 @@ public class Location {
 
     @OneToMany(mappedBy = "location")
     Set<LocationRental> locationRentals;
+
+    @ManyToOne
+    @JoinColumn(name="userid",referencedColumnName = "id",nullable = false,columnDefinition = "VARCHAR(255) DEFAULT 'DEFAULT_TYPE_ID'")
+    User user;
 }
