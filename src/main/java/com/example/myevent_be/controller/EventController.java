@@ -1,11 +1,9 @@
 package com.example.myevent_be.controller;
 
 import com.example.myevent_be.dto.request.EventCreateRequest;
-import com.example.myevent_be.dto.request.EventTypeUpdateRequest;
 import com.example.myevent_be.dto.request.EventUpdateRequest;
 import com.example.myevent_be.dto.response.ApiResponse;
 import com.example.myevent_be.dto.response.EventResponse;
-import com.example.myevent_be.dto.response.EventTypeResponse;
 import com.example.myevent_be.exception.AppException;
 import com.example.myevent_be.exception.ErrorCode;
 import com.example.myevent_be.service.EventService;
@@ -90,25 +88,6 @@ public class EventController {
             @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestPart("event") @Valid EventUpdateRequest request) {
         log.info("Received update event request: {}", request);
-//        if (file != null) {
-//            log.info("File details - Name: {}, Size: {}, ContentType: {}",
-//                    file.getOriginalFilename(), file.getSize(), file.getContentType());
-//            // Lưu file ảnh mới
-//            String fileName = storageService.storeFile(file);
-//            log.info("File stored successfully with name: {}", fileName);
-//            // Cập nhật trường img trong request
-//            request.setImg(fileName);
-//        }
-//        if (file != null) {
-//            String fileName = storageService.storeFile(file);
-//            request.setImg(fileName);
-//        }
-//
-//        EventResponse response = eventService.updateEvent(request, eventId);
-//        log.info("Event updated successfully: {}", response);
-//        return ApiResponse.<EventResponse>builder()
-//                .result(response)
-//                .build();
         try {
             // Store the uploaded file
             String fileName = storageService.storeFile(file);
