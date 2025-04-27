@@ -22,6 +22,8 @@ public enum ErrorCode {
     CONTRACT_NOT_FOUND(1011,"CONTRACT NOT FOUND",HttpStatus.BAD_REQUEST),
     EMAIL_NOT_FOUND(1012,"EMAIL NOT FOUND",HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(1015,"invalid token ",HttpStatus.BAD_REQUEST),
+    TOKEN_EXPIRED(1016,"token expired ",HttpStatus.BAD_REQUEST),
+    RENTAL_NOT_FOUND(1020,"rental not found ",HttpStatus.BAD_REQUEST)
     TOKEN_EXPIRED(1016,"token expired ",HttpStatus.BAD_REQUEST)
     ;
 

@@ -9,7 +9,6 @@ server:
 spring:
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=event-management2;encrypt=false;trustServerCertificate=true
-
     username: sa
     password: 123
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
@@ -22,17 +21,12 @@ spring:
     port: 587
     username: ngohuyen.280703@gmail.com
     password: auif imfh peqb oabd
-    protocol: smtp
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
-          ssl:
-            trust: smtp.gmail.com
-            protocols: TLSv1.2
-    default-encoding: UTF-8
   servlet:
     multipart:
       enabled: true

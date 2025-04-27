@@ -1,6 +1,12 @@
 package com.example.myevent_be.controller;
 
 import com.example.myevent_be.dto.request.RentalRequest;
+
+import com.example.myevent_be.dto.response.RentalResponse;
+import com.example.myevent_be.service.RentalService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+
 import com.example.myevent_be.dto.response.ApiResponse;
 import com.example.myevent_be.dto.response.RentalResponse;
 import com.example.myevent_be.exception.AppException;
@@ -12,58 +18,47 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rentals")
+@RequestMapping("/rentals")
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class RentalController {
-
-    RentalService rentalService;
-
-    @PostMapping
-    public ApiResponse<RentalResponse> createRental(@RequestBody @Valid RentalRequest request) {
-        RentalResponse response = rentalService.createRental(request);
-        return ApiResponse.<RentalResponse>builder()
-                .result(response)
-                .build();
-    }
+    private final RentalService rentalService;
 
     @GetMapping
-    public ApiResponse<List<RentalResponse>> getRentals() {
-        List<RentalResponse> rentals = rentalService.getAllRentals();
-        return ApiResponse.<List<RentalResponse>>builder()
-                .result(rentals)
-                .build();
+    public List<RentalResponse> getAllRentals() {
+        return rentalService.getAllRentals();
     }
 
-    @GetMapping("/{rentalId}")
-    public ApiResponse<RentalResponse> getRentalById(@PathVariable String rentalId) {
-        RentalResponse rental = rentalService.getRentalById(rentalId);
-        return ApiResponse.<RentalResponse>builder()
-                .result(rental)
-                .build();
+    @GetMapping("/{id}")
+    public ResponseEntity<RentalResponse> getRentalById(@PathVariable String id) {
+        return rentalService.getRentalById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{rentalId}")
-    public ApiResponse<RentalResponse> updateRental(
-            @PathVariable String rentalId,
-            @RequestBody @Valid RentalRequest request) {
-        RentalResponse response = rentalService.updateRental(rentalId, request);
-        return ApiResponse.<RentalResponse>builder()
-                .result(response)
-                .build();
+    @PostMapping
+    public RentalResponse createRental(@RequestBody RentalRequest request) {
+        return rentalService.createRental(request);
     }
 
-    @DeleteMapping("/{rentalId}")
-    public ApiResponse<Void> deleteRental(@PathVariable String rentalId) {
-        rentalService.deleteRental(rentalId);
-        return ApiResponse.<Void>builder()
-                .result(null)
-                .build();
+    @PutMapping("/{id}")
+    public ResponseEntity<RentalResponse> updateRental(@PathVariable String id, @RequestBody RentalRequest request) {
+        return rentalService.updateRental(id, request)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRental(@PathVariable String id) {
+        if (!rentalService.deleteRental(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
     }
 }
+
