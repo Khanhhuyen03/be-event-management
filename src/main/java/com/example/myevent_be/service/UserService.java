@@ -1,6 +1,7 @@
 package com.example.myevent_be.service;
 
 import com.example.myevent_be.dto.request.ResetPasswordRequest2;
+import com.example.myevent_be.dto.request.UpdateUserRoleRequest;
 import com.example.myevent_be.dto.request.UserCreateRequest;
 import com.example.myevent_be.dto.request.UserUpdateRequest;
 import com.example.myevent_be.dto.response.UserResponse;
@@ -109,7 +110,7 @@ public class UserService {
 
     @Transactional
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'SUPPLIER', 'MANAGER')")
-    public UserResponse updateUser(String id, MultipartFile avatar, String data)
+    public UserResponse updateUser(String id, UserUpdateRequest request)
             throws IOException {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -117,28 +118,32 @@ public class UserService {
                         "Không tìm thấy người dùng."
                 ));
 
-        // Parse JSON data từ FormData
-        ObjectMapper objectMapper = new ObjectMapper();
-        UserUpdateRequest request = null;
-        if (data != null && !data.isEmpty()) {
-            request = objectMapper.readValue(data, UserUpdateRequest.class);
-            // Cập nhật các trường từ request
-            userMapper.updateUser(user, request);
-            // Cập nhật password nếu có
-            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-                user.setPassword(passwordEncoder.encode(request.getPassword()));
-            }
-        }
-
-        // Xử lý file ảnh nếu có
-        if (avatar != null && !avatar.isEmpty()) {
-            String fileName = UUID.randomUUID() + "_" + avatar.getOriginalFilename();
-            Path filePath = Paths.get(uploadDir, fileName);
-            Files.createDirectories(filePath.getParent());
-            avatar.transferTo(filePath);
-//            // Lưu đường dẫn đầy đủ
-//            String avatarUrl = "/api/v1/FileUpload/files/" + fileName;
-//            user.setAvatar(avatarUrl);
+//        // Parse JSON data từ FormData
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        UserUpdateRequest request = null;
+//        if (data != null && !data.isEmpty()) {
+//            request = objectMapper.readValue(data, UserUpdateRequest.class);
+//            // Cập nhật các trường từ request
+//            userMapper.updateUser(user, request);
+//            // Cập nhật password nếu có
+//            if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+//                user.setPassword(passwordEncoder.encode(request.getPassword()));
+//            }
+//        }
+//
+//        // Xử lý file ảnh nếu có
+//        if (avatar != null && !avatar.isEmpty()) {
+//            String fileName = UUID.randomUUID() + "_" + avatar.getOriginalFilename();
+//            Path filePath = Paths.get(uploadDir, fileName);
+//            Files.createDirectories(filePath.getParent());
+//            avatar.transferTo(filePath);
+////            // Lưu đường dẫn đầy đủ
+////            String avatarUrl = "/api/v1/FileUpload/files/" + fileName;
+////            user.setAvatar(avatarUrl);
+//        }
+        // Cập nhật trường img nếu có giá trị mới
+        if (request.getAvatar() != null && !request.getAvatar().isEmpty()) {
+            user.setAvatar(request.getAvatar());
         }
 
         // Lưu user và trả về response

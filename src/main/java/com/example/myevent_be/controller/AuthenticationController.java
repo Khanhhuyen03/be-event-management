@@ -1,16 +1,13 @@
 package com.example.myevent_be.controller;
 
-import com.example.myevent_be.dto.request.*;
+import com.example.myevent_be.dto.request.AuthenticationRequest;
+import com.example.myevent_be.dto.request.ForgetPasswordRequest;
+import com.example.myevent_be.dto.request.LogoutRequest;
+import com.example.myevent_be.dto.request.ResetPasswordRequest;
 import com.example.myevent_be.dto.response.ApiResponse;
 import com.example.myevent_be.dto.response.AuthenticationResponse;
-import com.example.myevent_be.dto.response.IntrospectResponse;
-import com.example.myevent_be.dto.response.UserResponse;
-import com.example.myevent_be.entity.User;
-import com.example.myevent_be.mapper.UserMapper;
-import com.example.myevent_be.repository.UserRepository;
 import com.example.myevent_be.service.AuthenticationService;
 import com.example.myevent_be.service.PasswordResetService;
-import com.example.myevent_be.service.UserService;
 import com.example.myevent_be.service.UserVerificationService;
 import com.nimbusds.jose.JOSEException;
 import jakarta.mail.MessagingException;
@@ -21,7 +18,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.text.ParseException;
 
@@ -29,36 +25,27 @@ import java.text.ParseException;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+//@CrossOrigin(origins = "http://127.0.0.1:5500")
 public class AuthenticationController {
     AuthenticationService authenticationService;
     PasswordResetService passwordResetService;
     UserVerificationService userVerificationService;
-
     @PostMapping("/login")
-    ApiResponse<AuthenticationResponse> authenticated(@RequestBody AuthenticationRequest request){
+    public ApiResponse<AuthenticationResponse> authenticated(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
         return ApiResponse.<AuthenticationResponse>builder()
                 .result(result)
                 .build();
     }
 
-    @PostMapping("/introspect")
-    ApiResponse<IntrospectResponse> introspect(@RequestBody IntrospectRequest request)
-            throws ParseException, JOSEException {
-        var result = authenticationService.introspect(request);
-        return ApiResponse.<IntrospectResponse>builder()
-                .result(result)
-                .build();
-    }
-
     @PostMapping("/logout")
-    ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
+    public ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder().build();
     }
 
     @PostMapping("/forgot-password")
-    ApiResponse<Void> forgotPassword(@Valid @RequestBody ForgetPasswordRequest request)
+    public ApiResponse<Void> forgotPassword(@Valid @RequestBody ForgetPasswordRequest request)
             throws MessagingException {
         passwordResetService.sendResetPasswordToken(request);
         return ApiResponse.<Void>builder()
@@ -73,7 +60,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/reset-password")
-    ApiResponse<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+    public ApiResponse<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         passwordResetService.resetPassword(request.getNewPassword());
         return ApiResponse.<Void>builder()
                 .message("Đặt lại mật khẩu thành công")
@@ -83,13 +70,10 @@ public class AuthenticationController {
     @GetMapping("/verify-code")
     public ResponseEntity<ApiResponse<AuthenticationResponse>> verifyEmail(@RequestParam String code) {
         if (userVerificationService.verifyCode(code)) {
-            // Giả sử bạn có thể lấy user qua email liên quan tới code,
-            // hoặc hiện tại bạn chưa cần trả token/user sau khi xác thực.
             return ResponseEntity.ok(ApiResponse.<AuthenticationResponse>builder()
                     .message("Xác thực thành công")
                     .build());
         }
-
         return ResponseEntity.badRequest()
                 .body(ApiResponse.<AuthenticationResponse>builder()
                         .code(HttpStatus.BAD_REQUEST.value())
