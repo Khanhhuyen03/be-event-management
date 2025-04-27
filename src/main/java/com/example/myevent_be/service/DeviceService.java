@@ -2,21 +2,15 @@ package com.example.myevent_be.service;
 
 
 import com.example.myevent_be.dto.request.DeviceRequest;
-import com.example.myevent_be.dto.request.DeviceTypeRequest;
 import com.example.myevent_be.dto.response.DeviceResponse;
-import com.example.myevent_be.dto.response.DeviceTypeResponse;
 import com.example.myevent_be.dto.response.PageResponse;
 import com.example.myevent_be.entity.Device;
-import com.example.myevent_be.entity.Device_Type;
-import com.example.myevent_be.entity.Event;
-import com.example.myevent_be.entity.EventType;
-import com.example.myevent_be.exception.AppException;
-import com.example.myevent_be.exception.ErrorCode;
 import com.example.myevent_be.exception.ResourceNotFoundException;
 import com.example.myevent_be.mapper.DeviceMapper;
 import com.example.myevent_be.mapper.PageMapper;
 import com.example.myevent_be.repository.DeviceRepository;
 import com.example.myevent_be.repository.DeviceTypeRepository;
+import com.example.myevent_be.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,10 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +32,12 @@ public class DeviceService {
     DeviceMapper deviceMapper;
     DeviceTypeRepository deviceTypeRepository;
     PageMapper pageMapper;
+    UserRepository userRepository;
 
     @PreAuthorize("hasAuthority('ADMIN')")
     public DeviceResponse createDevice(DeviceRequest request) {
 
-        Device device = deviceMapper.toDevice(request,deviceTypeRepository);
+        Device device = deviceMapper.toDevice(request,deviceTypeRepository,userRepository);
 
         log.info("Received DeviceRequest: {}", request);
         log.info("deviceTypeId: {}", request.getDeviceType_id());
@@ -81,7 +72,7 @@ public class DeviceService {
         Device device = getDeviceById(id);
         return deviceMapper.toResponse(device);
     }
-
+    @PreAuthorize("hasAuthority('ADMIN')")
     public void deleteDevice(String id) {
         Device device = getDeviceById(id);
         deviceRepository.delete(device);

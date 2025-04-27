@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @Builder
@@ -18,5 +19,8 @@ public class DeviceResponse {
     private BigDecimal hourlyRentalFee;
     private int quantity;
     private String place;
-    private String deviceType_id;
+    private String deviceType_name;
+    private String userID;
+    private Date created_at;
+    private Date update_at;
 }

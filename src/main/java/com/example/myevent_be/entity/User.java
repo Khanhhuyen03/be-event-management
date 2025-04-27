@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
@@ -25,7 +26,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+    @Nationalized
     String first_name;
+    @Nationalized
     String last_name;
 
     @Email(message = "Email không hợp lệ")
@@ -39,11 +42,11 @@ public class User {
     Role role;
 
     String avatar;
-    @ValidPhoneNumber
+//    @ValidPhoneNumber
     String phone_number;
 
     @CreationTimestamp
-    @Temporal(TemporalType.TIMESTAMP) // Xác định kiểu thời gian
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(updatable = false)
     Date created_at;
 
@@ -53,4 +56,13 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     Set<Token> tokens;
+
+    @OneToMany(mappedBy = "id")
+    Set<Device> devices;
+
+    @OneToMany(mappedBy = "id")
+    Set<Service> services;
+
+    @OneToMany(mappedBy = "id")
+    Set<Location> locations;
 }

@@ -30,8 +30,9 @@ public class RoleService {
         return role.get();
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public List<RoleResponse> getRoles(){
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    public List<RoleResponse> getRoles() {
         return roleRepository.findAll().stream().map(roleMapper::toRoleResponse).toList();
     }
 

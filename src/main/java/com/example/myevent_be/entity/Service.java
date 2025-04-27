@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
@@ -25,7 +26,10 @@ public class Service {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+    @Nationalized
     String name;
+
+    @Nationalized
     String description;
     String image;
     BigDecimal hourly_salary;
@@ -42,4 +46,8 @@ public class Service {
 
     @OneToMany(mappedBy = "service")
     Set<ServiceRental> service_rentals;
+
+    @ManyToOne
+    @JoinColumn(name="userid",referencedColumnName = "id",nullable = false,columnDefinition = "VARCHAR(255) DEFAULT 'DEFAULT_TYPE_ID'")
+    User user;
 }

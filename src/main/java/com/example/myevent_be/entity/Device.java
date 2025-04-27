@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
@@ -25,7 +26,9 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+    @Nationalized
     String name;
+    @Nationalized
     String description;
     String image;
     BigDecimal hourly_rental_fee;
@@ -46,4 +49,8 @@ public class Device {
     @ManyToOne
     @JoinColumn(name = "device_type_id", referencedColumnName = "id", nullable = false  , columnDefinition = "VARCHAR(255) DEFAULT 'DEFAULT_TYPE_ID'")
     Device_Type device_type;
+
+    @ManyToOne
+    @JoinColumn(name="userid",referencedColumnName = "id",nullable = false,columnDefinition = "VARCHAR(255) DEFAULT 'DEFAULT_TYPE_ID'")
+    User user;
 }

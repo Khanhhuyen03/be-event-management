@@ -28,7 +28,7 @@ public class EventService {
     EventRepository eventRepository;
     EventTypeRepository eventTypeRepository;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public EventResponse createEvent(EventCreateRequest request){
         if (eventRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.EVENTTYPE_EXISTED);
@@ -50,6 +50,7 @@ public class EventService {
         return eventMapper.toEventResponse(event);
     }
 
+
     public List<EventResponse> getEvents(){ // xem danh sach su kien
         return eventRepository.findAll().stream().map(eventMapper::toEventResponse).toList();
     }
@@ -60,19 +61,32 @@ public class EventService {
         );
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public void deleteEvent(String id){
         eventRepository.deleteById(id);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public EventResponse updateEvent(EventUpdateRequest request, String id){
         Event event = eventRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Event not found")
         );
 
+        // Lấy EventType từ DB nếu có event_type_id
+        if (request.getEvent_type_id() != null) {
+            EventType eventType = eventTypeRepository.findById(request.getEvent_type_id())
+                    .orElseThrow(() -> new AppException(ErrorCode.EVENT_TYPE_NOT_FOUND));
+            event.setEvent_type(eventType);
+        }
+
+        // Cập nhật trường img nếu có giá trị mới
+        if (request.getImg() != null && !request.getImg().isEmpty()) {
+            event.setImg(request.getImg());
+        }
+
         eventMapper.updateEvent(event, request);
 
         return eventMapper.toEventResponse(eventRepository.save(event));
+
     }
 }

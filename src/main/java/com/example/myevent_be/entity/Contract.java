@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Nationalized;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
@@ -30,6 +31,7 @@ public class Contract {
     @JoinColumn(name = "rental_id")
     Rental rental;
 
+    @Nationalized
     String name;
 
     @Column(name = "payment_intent_id")
@@ -38,9 +40,6 @@ public class Contract {
     @ManyToOne
     @JoinColumn(name = "customer_id")
     Customer customer;
-
-    @Enumerated(EnumType.STRING)
-    ContractStatus status;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

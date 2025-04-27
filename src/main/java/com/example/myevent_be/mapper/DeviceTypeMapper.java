@@ -1,10 +1,8 @@
 package com.example.myevent_be.mapper;
 
 import com.example.myevent_be.dto.request.DeviceTypeRequest;
-import com.example.myevent_be.dto.request.EventTypeUpdateRequest;
 import com.example.myevent_be.dto.response.DeviceTypeResponse;
 import com.example.myevent_be.entity.Device_Type;
-import com.example.myevent_be.entity.EventType;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
