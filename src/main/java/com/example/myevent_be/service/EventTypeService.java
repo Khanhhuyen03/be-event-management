@@ -26,7 +26,7 @@ public class EventTypeService {
     EventTypeRepository eventTypeRepository;
     EventTypeMapper eventTypeMapper;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public EventTypeResponse createEventType(EventTypeCreateRequest request){
         if (eventTypeRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.EVENTTYPE_EXISTED);
@@ -36,24 +36,26 @@ public class EventTypeService {
         return eventTypeMapper.toEventTypeResponse(eventType);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    // @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'SUPPLIER', 'MANAGER')")
     public List<EventTypeResponse> getEventTypes(){
         return eventTypeRepository.findAll().stream().map(eventTypeMapper::toEventTypeResponse).toList();
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    // @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'SUPPLIER', 'MANAGER')")
     public EventTypeResponse getEventType(String id){
         return eventTypeMapper.toEventTypeResponse(
                 eventTypeRepository.findById(id).orElseThrow(() -> new RuntimeException("EventType not found"))
         );
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public void deleteEventType(String id){
         eventTypeRepository.deleteById(id);
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     public EventTypeResponse updateEventType(EventTypeUpdateRequest request, String id){
         EventType eventType = eventTypeRepository.findById(id).orElseThrow(
                 () -> new RuntimeException("Event type not found")

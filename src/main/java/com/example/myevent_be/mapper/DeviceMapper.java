@@ -8,6 +8,7 @@ import com.example.myevent_be.entity.User;
 import com.example.myevent_be.exception.ResourceNotFoundException;
 import com.example.myevent_be.repository.DeviceTypeRepository;
 import com.example.myevent_be.repository.UserRepository;
+import com.stripe.param.terminal.ReaderListParams;
 import org.mapstruct.*;
 
 
@@ -43,27 +44,34 @@ public interface DeviceMapper {
         return device;
     }
 
-
-
     //@Mapping(source = "id", target = "id") // Nếu field trong DTO khác với entity
-    default DeviceResponse toResponse(Device device){
+    @Named("deviceTypeToName")
+    public static String deviceTypeToName(Device_Type deviceType) {
+        return deviceType != null ? deviceType.getName() : null;
+    }
+
+    default DeviceResponse toResponse(Device device) {
         if ( device == null ) {
             return null;
         }
 
-        return DeviceResponse.builder()
-                .id(device.getId())
-                .name(device.getName())
-                .description(device.getDescription())
-                .image(device.getImage())
-                .quantity(device.getQuantity())
-                .hourlyRentalFee(device.getHourly_rental_fee())
-                .place(device.getPlace())
-                .deviceType_id(device.getDevice_type().getId())
-                .userID((device.getUser().getId()))
-                .update_at(device.getUpdate_at())
-                .created_at(device.getCreated_at())
-                .build();
+        DeviceResponse.DeviceResponseBuilder deviceResponse = DeviceResponse.builder();
+
+        deviceResponse.deviceType_name( DeviceMapper.deviceTypeToName( device.getDevice_type() ) );
+        deviceResponse.id( device.getId() );
+        deviceResponse.name(device.getName());
+        deviceResponse.description( device.getDescription() );
+        deviceResponse.image( device.getImage() );
+        deviceResponse.quantity( device.getQuantity() );
+        deviceResponse.place( device.getPlace() );
+        deviceResponse.userID(device.getUser().getId());
+        deviceResponse.hourlyRentalFee(device.getHourly_rental_fee());
+        deviceResponse.created_at( device.getCreated_at() );
+        deviceResponse.update_at( device.getUpdate_at() );
+
+        return deviceResponse.build();
     }
+
+
     void updateDevice(@MappingTarget Device device, DeviceRequest request);
 }

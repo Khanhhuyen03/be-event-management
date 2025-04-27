@@ -1,3 +1,4 @@
+
 package com.example.myevent_be.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -13,12 +14,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
     @Value("${jwt.signerKey}")
     private String signerKey;
 
@@ -55,7 +61,7 @@ public class SecurityConfig {
                 .requestMatchers(PUBLIC_ENDPOINTS)
                 .permitAll()
                 .requestMatchers("/event", "/event/**").permitAll()
-                .requestMatchers("/event-type/**").hasAuthority("ADMIN") // Chỉ ADMIN mới được tạo event type
+                .requestMatchers("/event-type/**").hasAnyAuthority("MANAGER", "ADMIN") // Chỉ ADMIN mới được tạo event type
                 .anyRequest()
                 .authenticated());
 
@@ -64,9 +70,37 @@ public class SecurityConfig {
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
-        httpSecurity.cors(Customizer.withDefaults());
+//        httpSecurity.cors(Customizer.withDefaults());
+       // Bật CORS với CorsConfigurationSource tùy chỉnh
+        httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return httpSecurity.build();
+    }
+
+}
+
+
+    private final String[] PUBLIC_ENDPOINTS = {
+            "/users/signing-up",  "/users/**", "/auth/login", "/auth/introspect", "/event", "/event/**",
+            "/auth/logout", "/api/verification/verify", "/api/v1/FileUpload/**",
+            "/auth/forgot-password", "/auth/verify-code", "/auth/reset-password",
+            "/auth/verify-pass-code", "devices","devices/**","deviceType","deviceType/**","services",
+            "services/**"
+    };
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://127.0.0.1:5500")); // Chỉ định chính xác origin
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true); // Cho phép gửi credentials
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
 

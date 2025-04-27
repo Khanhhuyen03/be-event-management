@@ -1,11 +1,9 @@
 package com.example.myevent_be.controller;
 
 import com.example.myevent_be.dto.request.EventCreateRequest;
-import com.example.myevent_be.dto.request.EventTypeUpdateRequest;
 import com.example.myevent_be.dto.request.EventUpdateRequest;
 import com.example.myevent_be.dto.response.ApiResponse;
 import com.example.myevent_be.dto.response.EventResponse;
-import com.example.myevent_be.dto.response.EventTypeResponse;
 import com.example.myevent_be.exception.AppException;
 import com.example.myevent_be.exception.ErrorCode;
 import com.example.myevent_be.service.EventService;
@@ -79,8 +77,36 @@ public class EventController {
         return "Event has been deleted";
     }
 
-    @PatchMapping("/{eventId}")
-    EventResponse updateEvent(@PathVariable String eventId, @RequestBody EventUpdateRequest request){
-        return eventService.updateEvent(request, eventId);
+//    @PatchMapping("/{eventId}")
+//    EventResponse updateEvent(@PathVariable String eventId, @RequestBody EventUpdateRequest request){
+//        return eventService.updateEvent(request, eventId);
+//    }
+
+    @PatchMapping(value = "/{eventId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ApiResponse<EventResponse> updateEvent(
+            @PathVariable String eventId,
+            @RequestPart(value = "file", required = false) MultipartFile file,
+            @RequestPart("event") @Valid EventUpdateRequest request) {
+        log.info("Received update event request: {}", request);
+        try {
+            // Store the uploaded file
+            String fileName = storageService.storeFile(file);
+            log.info("File stored successfully with name: {}", fileName);
+
+            // Set the image path in the request
+            request.setImg(fileName);
+
+            EventResponse response = eventService.updateEvent(request, eventId);
+            log.info("Event created successfully: {}", response);
+            return ApiResponse.<EventResponse>builder()
+                    .result(response)
+                    .build();
+        } catch (Exception e) {
+            log.error("Error creating event: ", e);
+            if (e instanceof AppException) {
+                throw e;
+            }
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
     }
 }
