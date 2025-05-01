@@ -51,7 +51,7 @@ public class FileUploadController {
             headers.setContentType(MediaType.IMAGE_JPEG);
             headers.setContentLength(bytes.length);
             headers.set("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-            headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            headers.set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
             headers.set("Access-Control-Allow-Headers", "*");
             headers.set("Access-Control-Allow-Credentials", "true");
             
@@ -77,7 +77,7 @@ public class FileUploadController {
             headers.setContentType(MediaType.IMAGE_JPEG);
             headers.setContentLength(bytes.length);
             headers.set("Access-Control-Allow-Origin", "http://127.0.0.1:5500");
-            headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+            headers.set("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE, OPTIONS");
             headers.set("Access-Control-Allow-Headers", "*");
             headers.set("Access-Control-Allow-Credentials", "true");
             

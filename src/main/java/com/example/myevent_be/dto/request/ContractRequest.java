@@ -1,5 +1,6 @@
 package com.example.myevent_be.dto.request;
 
+import com.example.myevent_be.enums.ContractStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

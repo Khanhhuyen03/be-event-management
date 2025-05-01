@@ -30,7 +30,7 @@ public class LocationService {
     UserRepository userRepository;
     PageMapper pageMapper;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPPLIER')")
     public LocationResponse createLocation(LocationRequest request) {
 
         Location location = mapper.toLocation(request);
@@ -54,10 +54,14 @@ public class LocationService {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Location not found with id: " + id));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPPLIER')")
     public LocationResponse updateLocation(LocationRequest request, String id){
         Location location = getLocationById(id);
 
+        // Cập nhật trường img nếu có giá trị mới
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
+            location.setImage(request.getImage());
+        }
         mapper.upDateLocation(location,request);
 
         return mapper.toLocationResponse(repository.save(location));
