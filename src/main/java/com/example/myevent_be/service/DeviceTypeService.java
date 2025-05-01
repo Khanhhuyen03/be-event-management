@@ -34,7 +34,7 @@ public class DeviceTypeService {
     DeviceTypeMapper deviceTypeMapper;
     PageMapper pageMapper;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPPLIER')")
     public DeviceTypeResponse createDeviceType(DeviceTypeRequest request){
         if (deviceTypeRepository.existsByName(request.getName()))
             throw new AppException(ErrorCode.EVENTTYPE_EXISTED);

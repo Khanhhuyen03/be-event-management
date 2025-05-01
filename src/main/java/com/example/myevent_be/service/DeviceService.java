@@ -34,7 +34,7 @@ public class DeviceService {
     PageMapper pageMapper;
     UserRepository userRepository;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPPLIER')")
     public DeviceResponse createDevice(DeviceRequest request) {
 
         Device device = deviceMapper.toDevice(request,deviceTypeRepository,userRepository);
@@ -59,9 +59,13 @@ public class DeviceService {
         return deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Device not found with id: " + id));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPPLIER')")
     public DeviceResponse updateDevice(DeviceRequest request, String id){
         Device device = getDeviceById(id);
+        // Cập nhật trường img nếu có giá trị mới
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
+            device.setImage(request.getImage());
+        }
 
         deviceMapper.updateDevice(device,request);
 
