@@ -238,6 +238,7 @@ public class ContractService {
 
         String role = SecurityContextHolder.getContext().getAuthentication().getAuthorities().iterator().next().getAuthority();
         if ((role.equals(""))) {
+
             String userId = SecurityContextHolder.getContext().getAuthentication().getName();
             if (!contract.getCustomer().getId().equals(userId)) {
                 throw new AppException(ErrorCode.CONTRACT_NOT_FOUND);
@@ -249,26 +250,25 @@ public class ContractService {
     }
 
     @Transactional
-    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
-    public ContractResponse updateContract(String contractId, ContractUpdateRequest request) {
-        log.info("Updating status for contract id: {} to status: {}", contractId, request.getStatus());
-        Contract contract = contractRepository.findById(contractId)
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-
-        log.info("Current contract status: {}", contract.getStatus());
-        contractMapper.updateContract(contract, request);
-        log.info("Updated contract status to: {}", contract.getStatus());
-
-        Contract updatedContract = contractRepository.saveAndFlush(contract);
-        log.info("Saved contract with status: {}", updatedContract.getStatus());
-
-        // Refresh lại entity từ database để đảm bảo dữ liệu mới nhất
-        Contract refreshedContract = contractRepository.findById(updatedContract.getId())
-                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
-        log.info("Refreshed contract status from database: {}", refreshedContract.getStatus());
-
-        return contractMapper.toContractResponse(refreshedContract);
-    }
+     @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN')")
+     public ContractResponse updateContract(String contractId, ContractUpdateRequest request) {
+         log.info("Updating status for contract id: {} to status: {}", contractId, request.getStatus());
+         Contract contract = contractRepository.findById(contractId)
+                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
+ 
+         log.info("Current contract status: {}", contract.getStatus());
+         contractMapper.updateContract(contract, request);
+         log.info("Updated contract status to: {}", contract.getStatus());
+ 
+         Contract updatedContract = contractRepository.saveAndFlush(contract);
+         log.info("Saved contract with status: {}", updatedContract.getStatus());
+ 
+         // Refresh lại entity từ database để đảm bảo dữ liệu mới nhất
+         Contract refreshedContract = contractRepository.findById(updatedContract.getId())
+         log.info("Refreshed contract status from database: {}", refreshedContract.getStatus());
+ 
+         return contractMapper.toContractResponse(refreshedContract);
+     }
 //    public ContractResponse updateContract(String contractId, ContractUpdateRequest contractUpdateRequest) {
 //        Contract existingContract = contractRepository.findById(contractId)
 //                .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));

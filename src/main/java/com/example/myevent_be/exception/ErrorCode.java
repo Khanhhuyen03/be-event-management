@@ -24,7 +24,7 @@ public enum ErrorCode {
     INVALID_TOKEN(1015,"invalid token ",HttpStatus.BAD_REQUEST),
     TOKEN_EXPIRED(1016,"token expired ",HttpStatus.BAD_REQUEST),
     RENTAL_NOT_FOUND(1020,"rental not found ",HttpStatus.BAD_REQUEST)
-    TOKEN_EXPIRED(1016,"token expired ",HttpStatus.BAD_REQUEST)
+
     ;
 
     int code;

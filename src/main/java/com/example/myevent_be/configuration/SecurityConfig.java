@@ -77,16 +77,6 @@ public class SecurityConfig {
         return httpSecurity.build();
     }
 
-}
-
-
-    private final String[] PUBLIC_ENDPOINTS = {
-            "/users/signing-up",  "/users/**", "/auth/login", "/auth/introspect", "/event", "/event/**",
-            "/auth/logout", "/api/verification/verify", "/api/v1/FileUpload/**",
-            "/auth/forgot-password", "/auth/verify-code", "/auth/reset-password",
-            "/auth/verify-pass-code", "devices","devices/**","deviceType","deviceType/**","services",
-            "services/**"
-    };
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

@@ -14,10 +14,5 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContractUpdateRequest {
-    //    UUID contractId;
-//    String name;
-//    UUID paymentIntentId;
-//    String rentalId;
-//    String customerId;
     String status;
 }
