@@ -39,6 +39,9 @@ public class Contract {
     @JoinColumn(name = "customer_id")
     Customer customer;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    ContractStatus status;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     Date create_at;

@@ -28,7 +28,7 @@ public class TimeLine {
 
     @Nationalized
     String description;
-    Date time_sart;
+    Date time_start;
     Date create_at;
     Date update_at;
 }

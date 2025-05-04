@@ -12,23 +12,31 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface ContractMapper {
+    @Mapping(source = "status", target = "status", qualifiedByName = "stringToStatus")
     Contract toContract(ContractRequest request);
-    
+
     @Mapping(source = "create_at", target = "createdAt")
     @Mapping(source = "update_at", target = "updatedAt")
     @Mapping(source = "customer.name", target = "customerName")
     @Mapping(source = "customer.phone_number", target = "customerPhone")
     @Mapping(source = "customer.address", target = "eventAddress")
     @Mapping(source = "rental.id", target = "rentalId")
+    @Mapping(source = "status", target = "status", qualifiedByName = "statusToString")
     ContractResponse toContractResponse(Contract contract);
-    
-    void updateContract(@MappingTarget Contract contract, ContractUpdateRequest contractUpdateRequest);
 
-    @Named("mapStatus")
-    default ContractStatus mapStatus(String status) {
-        if (status == null) {
-            return null;
+    default void updateContract(@MappingTarget Contract contract, ContractUpdateRequest request) {
+        if (request.getStatus() != null) {
+            contract.setStatus(ContractStatus.valueOf(request.getStatus()));
         }
-        return ContractStatus.valueOf(status);
+    }
+
+    @Named("statusToString")
+    default String statusToString(ContractStatus status) {
+        return status != null ? status.name() : null;
+    }
+
+    @Named("stringToStatus")
+    default ContractStatus stringToStatus(String status) {
+        return status != null ? ContractStatus.valueOf(status) : null;
     }
 }
