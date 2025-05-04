@@ -32,6 +32,10 @@ public class Contract {
     @Nationalized
     String name;
 
+    //    Enum status;
+    @Enumerated(EnumType.STRING)
+    ContractStatus status;
+
     @Column(name = "payment_intent_id")
     UUID paymentIntentId;
 

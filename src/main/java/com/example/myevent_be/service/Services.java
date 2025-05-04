@@ -29,7 +29,7 @@ public class Services {
     ServiceRepository repository;
     PageMapper pageMapper;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPPLIER')")
     public ServiceResponse createService(ServiceRequest request) {
 
         com.example.myevent_be.entity.Service service = mapper.toService(request);
@@ -54,10 +54,14 @@ public class Services {
         return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Service not found with id: " + id));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority('SUPPLIER')")
     public ServiceResponse updateService(ServiceRequest request, String id){
         com.example.myevent_be.entity.Service service = getServiceById(id);
 
+        // Cập nhật trường img nếu có giá trị mới
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
+            service.setImage(request.getImage());
+        }
         mapper.updateService(service,request);
 
         return mapper.toServiceRespones(repository.save(service));

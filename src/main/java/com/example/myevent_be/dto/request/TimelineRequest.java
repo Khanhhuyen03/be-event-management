@@ -1,22 +1,18 @@
 package com.example.myevent_be.dto.request;
 
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.util.Date;
 
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ServiceRequest {
-    String name;
+public class TimelineRequest {
+
+    Date time_start;
     String description;
-    String image;
-    BigDecimal hourly_salary;
-    int quantity;
-    String place;
-    String userID;
+    String rental_id;
 }

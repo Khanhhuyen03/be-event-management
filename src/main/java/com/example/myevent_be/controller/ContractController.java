@@ -4,8 +4,6 @@ import com.example.myevent_be.dto.request.ContractRequest;
 import com.example.myevent_be.dto.request.ContractUpdateRequest;
 import com.example.myevent_be.dto.response.ApiResponse;
 import com.example.myevent_be.dto.response.ContractResponse;
-import com.example.myevent_be.entity.Contract;
-import com.example.myevent_be.exception.AppException;
 import com.example.myevent_be.service.ContractService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +37,7 @@ public class ContractController {
     }
 
     @GetMapping("/{contractId}")
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+//    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ApiResponse<ContractResponse> getContractById(@PathVariable String contractId) {
         ContractResponse contractResponse = contractService.getContractById(contractId);
         return ApiResponse.<ContractResponse>builder()

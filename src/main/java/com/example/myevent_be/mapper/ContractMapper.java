@@ -5,10 +5,7 @@ import com.example.myevent_be.dto.request.ContractUpdateRequest;
 import com.example.myevent_be.dto.response.ContractResponse;
 import com.example.myevent_be.entity.Contract;
 import com.example.myevent_be.enums.ContractStatus;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface ContractMapper {

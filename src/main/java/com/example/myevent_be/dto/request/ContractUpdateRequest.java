@@ -1,8 +1,10 @@
 package com.example.myevent_be.dto.request;
 
+import com.example.myevent_be.enums.ContractStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.RequestMapping;
+
 import java.util.UUID;
 
 
@@ -12,10 +14,5 @@ import java.util.UUID;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ContractUpdateRequest {
-//    UUID contractId;
-//    String name;
-//    UUID paymentIntentId;
-//    String rentalId;
-//    String customerId;
     String status;
 }
