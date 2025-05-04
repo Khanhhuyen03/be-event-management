@@ -1,7 +1,6 @@
 package com.example.myevent_be.service;
 
 import com.example.myevent_be.dto.request.ResetPasswordRequest2;
-import com.example.myevent_be.dto.request.UpdateUserRoleRequest;
 import com.example.myevent_be.dto.request.UserCreateRequest;
 import com.example.myevent_be.dto.request.UserUpdateRequest;
 import com.example.myevent_be.dto.response.UserResponse;
@@ -13,26 +12,18 @@ import com.example.myevent_be.mapper.UserMapper;
 import com.example.myevent_be.repository.RoleRepository;
 import com.example.myevent_be.repository.UserRepository;
 import com.example.myevent_be.repository.PasswordResetTokenRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 import java.util.Arrays;
 
 @Service

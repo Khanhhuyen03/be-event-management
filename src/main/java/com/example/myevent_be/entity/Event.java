@@ -47,8 +47,15 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name = "eventType_id", referencedColumnName = "id", nullable = false)
-    EventType event_type;
+//    EventType event_type;
+    EventType eventType;
 
     @OneToMany(mappedBy = "event")
     Set<Rental> rentals;
+
+//    @Column(name = "location_type")
+//    private String locationType; // "outdoor" hoặc "indoor"
+//
+//    @Column(name = "max_guests")
+//    private Integer maxGuests; // Số lượng khách mời tối đa
 }

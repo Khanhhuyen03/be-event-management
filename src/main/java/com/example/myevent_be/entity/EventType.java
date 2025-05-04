@@ -35,6 +35,7 @@ public class EventType {
     @Temporal(TemporalType.TIMESTAMP)
     Date update_at;
 
-    @OneToMany(mappedBy = "event_type")
+    @OneToMany(mappedBy = "eventType")
+//@OneToMany(mappedBy = "event_type")
     Set<Event> event;
 }

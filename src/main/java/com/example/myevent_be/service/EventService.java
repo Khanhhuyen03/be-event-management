@@ -45,7 +45,8 @@ public class EventService {
         log.info("Received EventCreateRequest: {}", request);
         log.info("eventTypeId: {}", request.getEventType_id());
 
-        event.setEvent_type(eventType);
+        event.setEventType(eventType);
+//        event.setEvent_type(eventType);
         eventRepository.save(event);
         return eventMapper.toEventResponse(event);
     }
@@ -76,7 +77,8 @@ public class EventService {
         if (request.getEvent_type_id() != null) {
             EventType eventType = eventTypeRepository.findById(request.getEvent_type_id())
                     .orElseThrow(() -> new AppException(ErrorCode.EVENT_TYPE_NOT_FOUND));
-            event.setEvent_type(eventType);
+//            event.setEvent_type(eventType);
+            event.setEventType(eventType);
         }
 
         // Cập nhật trường img nếu có giá trị mới
