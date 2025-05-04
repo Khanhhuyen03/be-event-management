@@ -6,9 +6,7 @@ import com.example.myevent_be.repository.UserVerificationRequestRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -16,9 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.SimpleMailMessage;
 import java.util.*;
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -82,34 +78,6 @@ public class UserVerificationService {
         calendar.add(Calendar.MINUTE, 15); // mã có hiệu lực trong 15 phút
         return calendar.getTime();
     }
-
-//    public boolean verifyCode(String code) {
-//        logger.info("Verifying code: {}", code);
-//
-//        // Tìm verification request với code tương ứng
-//        Optional<UserVerificationRequest> requestOpt = verificationRequestRepository.findAll().stream()
-//            .filter(req -> req.getCode() != null && req.getCode().equals(code))
-//            .findFirst();
-//
-//        if (requestOpt.isEmpty()) {
-//            logger.warn("No verification request found for code: {}", code);
-//            return false;
-//        }
-//
-//        UserVerificationRequest request = requestOpt.get();
-//
-//        // Kiểm tra code có hết hạn chưa
-//        if (request.getExpirationTime().before(new Date())) {
-//            logger.warn("Verification code expired for code: {}", code);
-//            verificationRequestRepository.delete(request);
-//            return false;
-//        }
-//
-//        // Xóa code sau khi xác thực thành công
-//        verificationRequestRepository.delete(request);
-//        logger.info("Code verification successful for code: {}", code);
-//        return true;
-//    }
 
     public boolean verifyCode(String code) {
         Optional<UserVerificationRequest> requestOpt =

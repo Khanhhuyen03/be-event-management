@@ -1,11 +1,10 @@
 package com.example.myevent_be.controller;
 
+import com.example.myevent_be.dto.request.AIRequest;
+import com.example.myevent_be.dto.response.AIResponse;
 import com.example.myevent_be.service.AIService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/ai")
@@ -13,9 +12,22 @@ public class AIController {
 
     @Autowired
     private AIService googleAIService;
+    public AIController(AIService aiService) {
+        this.googleAIService = aiService;
+    }
+
+    @GetMapping("/start")
+    public AIResponse start() {
+        return googleAIService.startConversation();
+    }
 
     @PostMapping("/generate")
-    public String generate(@RequestBody String prompt) {
-        return googleAIService.generateText(prompt);
+    public AIResponse generate(@RequestBody AIRequest request) {
+        if (request.getPrompt() == null || request.getPrompt().isBlank()) {
+            AIResponse response = new AIResponse();
+            response.setMessage("Vui lòng chọn loại sự kiện.");
+            return response;
+        }
+        return googleAIService.generateResponse(request.getPrompt());
     }
 }

@@ -1,7 +1,6 @@
 package com.example.myevent_be.controller;
 
 import com.example.myevent_be.dto.response.ApiResponse;
-import com.example.myevent_be.entity.User;
 import com.example.myevent_be.entity.UserVerificationRequest;
 import com.example.myevent_be.repository.UserRepository;
 import com.example.myevent_be.repository.UserVerificationRequestRepository;
@@ -9,7 +8,6 @@ import com.example.myevent_be.service.UserService;
 import com.example.myevent_be.service.UserVerificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.slf4j.Logger;
@@ -59,61 +57,6 @@ public class UserVerificationController {
 
         return ResponseEntity.ok("Tài khoản đã được xác nhận thành công.");
     }
-//    public ResponseEntity<ApiResponse<String>> verifyUser(
-//            @RequestParam(required = false) String email,
-//            @RequestParam(required = false) String code) {
-//        logger.info("Raw request received for verification");
-//        logger.info("Code parameter: '{}' (null? {})", code, code == null);
-//        logger.info("Email parameter: '{}' (null? {})", email, email == null);
-//
-//        // Validate parameters
-//        if (code == null || code.trim().isEmpty()) {
-//            logger.warn("Verification request received without code or empty code");
-//            return ResponseEntity.badRequest()
-//                .body(ApiResponse.<String>builder()
-//                    .code(HttpStatus.BAD_REQUEST.value())
-//                    .message("Mã xác nhận không được để trống")
-//                    .build());
-//        }
-//
-//        try {
-//            boolean isVerified;
-//
-//            if (email == null || email.isEmpty()) {
-//                logger.info("Verifying with code only");
-//                isVerified = userVerificationService.verifyCode(code, email);
-//            } else {
-//                logger.info("Verifying with email and code");
-//                isVerified = userVerificationService.verifyCode(email, code);
-//                if (isVerified) {
-//                    userService.verifyEmail(email, code);
-//                }
-//            }
-//
-//            if (!isVerified) {
-//                logger.warn("Verification failed for code: {}", code);
-//                return ResponseEntity.badRequest()
-//                    .body(ApiResponse.<String>builder()
-//                        .code(HttpStatus.BAD_REQUEST.value())
-//                        .message("Mã xác nhận không hợp lệ hoặc đã hết hạn")
-//                        .build());
-//            }
-//
-//            logger.info("Verification successful for code: {}", code);
-//            return ResponseEntity.ok(ApiResponse.<String>builder()
-//                .code(HttpStatus.OK.value())
-//                .message("Xác thực thành công")
-//                .build());
-//
-//        } catch (Exception e) {
-//            logger.error("Error during verification process", e);
-//            return ResponseEntity.badRequest()
-//                .body(ApiResponse.<String>builder()
-//                    .code(HttpStatus.BAD_REQUEST.value())
-//                    .message("Lỗi xác thực: " + e.getMessage())
-//                    .build());
-//        }
-//    }
 
     @PostMapping("/resend")
     public ResponseEntity<ApiResponse<String>> resendVerificationCode(@RequestParam String email) {
