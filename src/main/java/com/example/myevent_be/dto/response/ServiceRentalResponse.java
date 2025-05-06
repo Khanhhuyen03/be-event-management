@@ -5,7 +5,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 @SuperBuilder
@@ -13,10 +13,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DeviceRentalResponse {
+public class ServiceRentalResponse {
+
     String id;
-    String deviceTypeName;
-    String deviceName;
+    String serviceName;
     String supplierName;
     BigDecimal pricePerDay;
     Integer quantity;
@@ -24,4 +24,5 @@ public class DeviceRentalResponse {
     Date create_at;
     Date update_at;
     String rental_id;
+    
 }

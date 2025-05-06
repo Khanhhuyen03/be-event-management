@@ -1,16 +1,11 @@
 package com.example.myevent_be.dto.request;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.util.Date;
-import jakarta.validation.constraints.NotNull;
 
 @Data
 
@@ -18,20 +13,11 @@ import jakarta.validation.constraints.NotNull;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RentalRequest {
-    @NotNull(message = "userId is required")
+public class RentalUpdateRequest {
     String userId;
-
-    @NotNull(message = "eventId is required")
     String eventId;
-
     BigDecimal totalPrice;
-
-    @NotNull(message = "rentalStartTime is required")
     Date rentalStartTime;
-
-    @NotNull(message = "rentalEndTime is required")
     Date rentalEndTime;
-
     String customLocation;
 } 

@@ -265,6 +265,7 @@ public class ContractService {
  
          // Refresh lại entity từ database để đảm bảo dữ liệu mới nhất
          Contract refreshedContract = contractRepository.findById(updatedContract.getId())
+                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
          log.info("Refreshed contract status from database: {}", refreshedContract.getStatus());
  
          return contractMapper.toContractResponse(refreshedContract);

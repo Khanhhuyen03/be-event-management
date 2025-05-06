@@ -37,7 +37,7 @@ public class DeviceService {
     @PreAuthorize("hasAuthority('SUPPLIER')")
     public DeviceResponse createDevice(DeviceRequest request) {
 
-        Device device = deviceMapper.toDevice(request,deviceTypeRepository,userRepository);
+        Device device = deviceMapper.toDevice(request, deviceTypeRepository, userRepository);
 
         log.info("Received DeviceRequest: {}", request);
         log.info("deviceTypeId: {}", request.getDeviceType_id());
@@ -47,12 +47,12 @@ public class DeviceService {
     }
 
     public PageResponse getDevices(int pageNo, int pageSize) {
-        int p=0;
-        if(pageNo>0){
-            p=pageNo-1;
+        int p = 0;
+        if (pageNo > 0) {
+            p = pageNo - 1;
         }
         Page<Device> page = deviceRepository.findAll(PageRequest.of(p, pageSize));
-        return pageMapper.toPageResponse(page,deviceMapper::toResponse);
+        return pageMapper.toPageResponse(page, deviceMapper::toResponse);
     }
 
     public Device getDeviceById(String id) {
@@ -60,23 +60,25 @@ public class DeviceService {
     }
 
     @PreAuthorize("hasAuthority('SUPPLIER')")
-    public DeviceResponse updateDevice(DeviceRequest request, String id){
+    public DeviceResponse updateDevice(DeviceRequest request, String id) {
         Device device = getDeviceById(id);
         // Cập nhật trường img nếu có giá trị mới
         if (request.getImage() != null && !request.getImage().isEmpty()) {
             device.setImage(request.getImage());
         }
 
-        deviceMapper.updateDevice(device,request);
+        deviceMapper.updateDevice(device, request);
 
         return deviceMapper.toResponse(deviceRepository.save(device));
     }
 
-    public DeviceResponse getDevice(@PathVariable String id){
+    public DeviceResponse getDevice(@PathVariable String id) {
         Device device = getDeviceById(id);
         return deviceMapper.toResponse(device);
     }
-    @PreAuthorize("hasAuthority('ADMIN')")
+
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public void deleteDevice(String id) {
         Device device = getDeviceById(id);
         deviceRepository.delete(device);

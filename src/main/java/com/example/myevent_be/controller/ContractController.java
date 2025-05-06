@@ -7,7 +7,6 @@ import com.example.myevent_be.dto.response.ContractResponse;
 import com.example.myevent_be.service.ContractService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

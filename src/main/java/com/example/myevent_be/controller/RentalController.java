@@ -1,7 +1,10 @@
 package com.example.myevent_be.controller;
 
+import com.example.myevent_be.dto.request.DeviceRentalUpdateRequest;
 import com.example.myevent_be.dto.request.RentalRequest;
 
+import com.example.myevent_be.dto.request.RentalUpdateRequest;
+import com.example.myevent_be.dto.response.DeviceRentalResponse;
 import com.example.myevent_be.dto.response.RentalResponse;
 import com.example.myevent_be.service.RentalService;
 import lombok.RequiredArgsConstructor;
@@ -42,15 +45,18 @@ public class RentalController {
     }
 
     @PostMapping
-    public RentalResponse createRental(@RequestBody RentalRequest request) {
+    public RentalResponse createRental(@Valid @RequestBody RentalRequest request) {
         return rentalService.createRental(request);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<RentalResponse> updateRental(@PathVariable String id, @RequestBody RentalRequest request) {
-        return rentalService.updateRental(id, request)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    @PatchMapping("/{id}")
+    public ApiResponse<RentalResponse> updateRental(
+            @PathVariable String id,
+            @Valid @RequestBody RentalUpdateRequest request) {
+        RentalResponse rental = rentalService.updateRental(id, request);
+        return ApiResponse.<RentalResponse>builder()
+                .result(rental)
+                .build();
     }
 
     @DeleteMapping("/{id}")
@@ -59,6 +65,11 @@ public class RentalController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/event/{eventId}")
+    public List<RentalResponse> getRentalsByEventId(@PathVariable String eventId) {
+        return rentalService.getRentalsByEventId(eventId);
     }
 }
 

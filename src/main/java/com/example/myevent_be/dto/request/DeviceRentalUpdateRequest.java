@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DeviceRentalRequest {
+public class DeviceRentalUpdateRequest {
     String deviceId;
     String rentalId;
     Integer quantity;

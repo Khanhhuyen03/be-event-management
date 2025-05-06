@@ -1,6 +1,7 @@
 package com.example.myevent_be.service;
 
 import com.example.myevent_be.dto.request.DeviceRentalRequest;
+import com.example.myevent_be.dto.request.DeviceRentalUpdateRequest;
 import com.example.myevent_be.dto.response.DeviceRentalResponse;
 import com.example.myevent_be.entity.Device;
 import com.example.myevent_be.entity.DeviceRental;
@@ -30,7 +31,6 @@ public class DeviceRentalService {
     DeviceRentalRepository deviceRentalRepository;
     DeviceRentalMapper deviceRentalMapper;
     DeviceRepository deviceRepository;
-    DeviceTypeRepository deviceTypeRepository;
     RentalRepository rentalRepository;
 
     public List<DeviceRentalResponse> getAllDeviceRentals() {
@@ -52,38 +52,26 @@ public class DeviceRentalService {
     public DeviceRentalResponse createDeviceRental(DeviceRentalRequest request) {
         log.info("Creating new device rental");
 
-        // Lấy hoặc tạo mới Device_Type
-        Device_Type deviceType = deviceTypeRepository.findByName(request.getDeviceType())
-                .orElseGet(() -> {
-                    Device_Type newType = new Device_Type();
-                    newType.setName(request.getDeviceType());
-                    return deviceTypeRepository.save(newType);
-                });
+        Device device = deviceRepository.findById(request.getDeviceId())
+                .orElseThrow(() -> new ResourceNotFoundException("Device not found"));
 
-        // Lấy hoặc tạo mới Device
-        Device device = deviceRepository.findByNameAndDevice_type(request.getDeviceName(), deviceType)
-                .orElseGet(() -> {
-                    Device newDevice = new Device();
-                    newDevice.setName(request.getDeviceName());
-                    newDevice.setDevice_type(deviceType);
-                    newDevice.setHourly_rental_fee(request.getPricePerDay());
-                    newDevice.setQuantity(request.getQuantity());
-                    return deviceRepository.save(newDevice);
-                });
-
-        // Tạo mới DeviceRental
-        DeviceRental deviceRental = new DeviceRental();
-        deviceRental.setDevice(device);
-        deviceRental.setQuantity(request.getQuantity());
-
-        // Nếu có rentalId, liên kết với Rental
-        if (request.getRentalId() != null) {
-            Rental rental = rentalRepository.findById(request.getRentalId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Rental not found with id: " + request.getRentalId()));
-            deviceRental.setRental(rental);
+        // Kiểm tra số lượng còn lại
+        if (device.getQuantity() < request.getQuantity()) {
+            throw new RuntimeException("Số lượng thiết bị trong kho không đủ!");
         }
 
-        // Lưu DeviceRental
+        // Trừ số lượng thiết bị
+        device.setQuantity(device.getQuantity() - request.getQuantity());
+        deviceRepository.save(device);
+
+        Rental rental = rentalRepository.findById(request.getRentalId())
+                .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
+
+        DeviceRental deviceRental = new DeviceRental();
+        deviceRental.setDevice(device);
+        deviceRental.setRental(rental);
+        deviceRental.setQuantity(request.getQuantity());
+
         DeviceRental saved = deviceRentalRepository.save(deviceRental);
         return deviceRentalMapper.toDeviceRentalResponse(saved);
     }
@@ -95,5 +83,32 @@ public class DeviceRentalService {
             throw new ResourceNotFoundException("Device rental not found with id: " + id);
         }
         deviceRentalRepository.deleteById(id);
+    }
+
+    @Transactional
+    public DeviceRentalResponse updateDeviceRental(String id, DeviceRentalUpdateRequest request) {
+        DeviceRental existingDeviceRental = deviceRentalRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Device rental not found with id: " + id));
+
+        DeviceRental updated = deviceRentalRepository.save(existingDeviceRental);
+        deviceRentalMapper.updateDeviceRental(existingDeviceRental, request);
+        return deviceRentalMapper.toDeviceRentalResponse(updated);
+    }
+
+    public List<DeviceRentalResponse> getDeviceRentalsByRentalId(String rentalId) {
+        log.info("Getting device rentals by rental id: {}", rentalId);
+
+        // Check if rental exists
+        if (!rentalRepository.existsById(rentalId)) {
+            throw new ResourceNotFoundException("Rental not found with id: " + rentalId);
+        }
+
+        // Find all device rentals for the given rental ID
+        List<DeviceRental> deviceRentals = deviceRentalRepository.findByRentalId(rentalId);
+
+        // Map to response DTOs
+        return deviceRentals.stream()
+                .map(deviceRentalMapper::toDeviceRentalResponse)
+                .toList();
     }
 }

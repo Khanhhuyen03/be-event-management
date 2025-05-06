@@ -1,10 +1,9 @@
 package com.example.myevent_be.controller;
 
+import com.example.myevent_be.dto.request.DeviceRentalUpdateRequest;
 import com.example.myevent_be.dto.request.TimelineRequest;
-import com.example.myevent_be.dto.response.PageResponse;
-import com.example.myevent_be.dto.response.ResponseData;
-import com.example.myevent_be.dto.response.ResponseError;
-import com.example.myevent_be.dto.response.TimelineResponse;
+import com.example.myevent_be.dto.request.TimelineUpdateRequest;
+import com.example.myevent_be.dto.response.*;
 import com.example.myevent_be.service.TimelineService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -13,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/timelines")
@@ -64,16 +65,15 @@ public class TimelineController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseData<Void> updateTimeline(@PathVariable String id, @Valid @RequestBody TimelineRequest request) {
-        log.info("Request update TimelineId={}", id);
-        try {
-            timelineService.updateTimeline(request, id);
-            return new ResponseData<>(HttpStatus.ACCEPTED.value(), "Timeline updated successfully");
-        } catch (Exception e) {
-            log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
-            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Update Timeline fail");
-        }
+    @PatchMapping("/{id}")
+    public ApiResponse<TimelineResponse> updateDeviceRental(
+            @PathVariable String id,
+            @Valid @RequestBody TimelineUpdateRequest request) {
+        log.info("Request update time line with id: {}", id);
+        TimelineResponse timelineResponse = timelineService.updatrTimeLine(id, request);
+        return ApiResponse.<TimelineResponse>builder()
+                .result(timelineResponse)
+                .build();
     }
 
     @DeleteMapping("/{id}")
@@ -86,6 +86,19 @@ public class TimelineController {
         } catch (Exception e) {
             log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
             return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Delete Timeline fail");
+        }
+    }
+
+    @GetMapping("/rental/{rentalId}")
+    public ResponseData<List<TimelineResponse>> getTimelinesByRentalId(@PathVariable String rentalId) {
+        log.info("Request get timelines by rental id: {}", rentalId);
+
+        try {
+            List<TimelineResponse> timelines = timelineService.getTimelinesByRentalId(rentalId);
+            return new ResponseData<>(HttpStatus.OK.value(), "Timelines retrieved successfully", timelines);
+        } catch (Exception e) {
+            log.error(ERROR_MESSAGE, e.getMessage(), e.getCause());
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Failed to retrieve timelines");
         }
     }
 }

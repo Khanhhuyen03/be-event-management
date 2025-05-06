@@ -1,8 +1,12 @@
 package com.example.myevent_be.service;
 
+import com.example.myevent_be.dto.request.DeviceRentalUpdateRequest;
 import com.example.myevent_be.dto.request.TimelineRequest;
+import com.example.myevent_be.dto.request.TimelineUpdateRequest;
+import com.example.myevent_be.dto.response.DeviceRentalResponse;
 import com.example.myevent_be.dto.response.PageResponse;
 import com.example.myevent_be.dto.response.TimelineResponse;
+import com.example.myevent_be.entity.DeviceRental;
 import com.example.myevent_be.entity.TimeLine;
 import com.example.myevent_be.exception.ResourceNotFoundException;
 import com.example.myevent_be.mapper.PageMapper;
@@ -16,7 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +34,7 @@ public class TimelineService {
     TimelineRepository timelineRepository;
     TimelineMapper timelineMapper;
     PageMapper pageMapper;
-    RentalRepository rentalRepository;
+    // RentalRepository rentalRepository;
 
 
     public TimelineResponse createTimeline(TimelineRequest request) {
@@ -54,12 +61,14 @@ public class TimelineService {
     }
 
 
-    public TimelineResponse updateTimeline(TimelineRequest request, String id){
-        TimeLine timeline= getTimelineById(id);
+    @Transactional
+    public TimelineResponse updatrTimeLine(String id, TimelineUpdateRequest request) {
+        TimeLine timeLine = timelineRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("time line not found with id: " + id));
 
-        timelineMapper.upDateTimeline(timeline,request);
-
-        return timelineMapper.toTimelineResponse(timelineRepository.save(timeline));
+        TimeLine updated = timelineRepository.save(timeLine);
+        timelineMapper.updateTimeLine(timeLine, request);
+        return timelineMapper.toTimelineResponse(updated);
     }
 
     public TimelineResponse getTimeline(@PathVariable String id){
@@ -72,4 +81,15 @@ public class TimelineService {
        timelineRepository.delete(timeline);
     }
 
+    public List<TimelineResponse> getTimelinesByRentalId(String rentalId) {
+        log.info("Getting timelines by rental id: {}", rentalId);
+
+        // Find all timelines for the given rental ID
+        List<TimeLine> timelines = timelineRepository.findByRentalId(rentalId);
+
+        // Map to response DTOs
+        return timelines.stream()
+                .map(timelineMapper::toTimelineResponse)
+                .toList();
+    }
 }

@@ -42,12 +42,12 @@ public class Services {
     }
 
     public PageResponse getServices(int pageNo, int pageSize) {
-        int p=0;
-        if(pageNo>0){
-            p=pageNo-1;
+        int p = 0;
+        if (pageNo > 0) {
+            p = pageNo - 1;
         }
         Page<com.example.myevent_be.entity.Service> page = repository.findAll(PageRequest.of(p, pageSize));
-        return pageMapper.toPageResponse(page,mapper::toServiceRespones);
+        return pageMapper.toPageResponse(page, mapper::toServiceRespones);
     }
 
     public com.example.myevent_be.entity.Service getServiceById(String id) {
@@ -55,23 +55,25 @@ public class Services {
     }
 
     @PreAuthorize("hasAuthority('SUPPLIER')")
-    public ServiceResponse updateService(ServiceRequest request, String id){
+    public ServiceResponse updateService(ServiceRequest request, String id) {
         com.example.myevent_be.entity.Service service = getServiceById(id);
 
         // Cập nhật trường img nếu có giá trị mới
         if (request.getImage() != null && !request.getImage().isEmpty()) {
             service.setImage(request.getImage());
         }
-        mapper.updateService(service,request);
+        mapper.updateService(service, request);
 
         return mapper.toServiceRespones(repository.save(service));
     }
 
-    public ServiceResponse getService(@PathVariable String id){
+    public ServiceResponse getService(@PathVariable String id) {
         com.example.myevent_be.entity.Service device = getServiceById(id);
         return mapper.toServiceRespones(device);
     }
-    @PreAuthorize("hasAuthority('ADMIN')")
+
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public void deleteService(String id) {
         com.example.myevent_be.entity.Service device = getServiceById(id);
         repository.delete(device);
