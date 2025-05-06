@@ -1,9 +1,13 @@
 package com.example.myevent_be.mapper;
 
+import com.example.myevent_be.dto.request.DeviceRentalUpdateRequest;
+import com.example.myevent_be.dto.request.RentalUpdateRequest;
 import com.example.myevent_be.dto.response.RentalResponse;
+import com.example.myevent_be.entity.DeviceRental;
 import com.example.myevent_be.entity.Rental;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface RentalMapper {
@@ -16,4 +20,6 @@ public interface RentalMapper {
     @Mapping(source = "rental_end_time", target = "rentalEndTime")
     @Mapping(source = "custom_location", target = "customLocation")
     RentalResponse toRentalResponse(Rental rental);
+
+    void updateRental(@MappingTarget Rental rental, RentalUpdateRequest request);
 } 

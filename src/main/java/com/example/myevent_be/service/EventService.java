@@ -16,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -63,7 +64,8 @@ public class EventService {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
-    public void deleteEvent(String id){
+    public void deleteEvent(@PathVariable String id){
+        EventResponse event = getEvent(id);
         eventRepository.deleteById(id);
     }
 

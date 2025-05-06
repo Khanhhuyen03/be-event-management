@@ -42,12 +42,12 @@ public class LocationService {
     }
 
     public PageResponse getLocations(int pageNo, int pageSize) {
-        int p=0;
-        if(pageNo>0){
-            p=pageNo-1;
+        int p = 0;
+        if (pageNo > 0) {
+            p = pageNo - 1;
         }
         Page<Location> page = repository.findAll(PageRequest.of(p, pageSize));
-        return pageMapper.toPageResponse(page,mapper::toLocationResponse);
+        return pageMapper.toPageResponse(page, mapper::toLocationResponse);
     }
 
     public Location getLocationById(String id) {
@@ -55,23 +55,25 @@ public class LocationService {
     }
 
     @PreAuthorize("hasAuthority('SUPPLIER')")
-    public LocationResponse updateLocation(LocationRequest request, String id){
+    public LocationResponse updateLocation(LocationRequest request, String id) {
         Location location = getLocationById(id);
 
         // Cập nhật trường img nếu có giá trị mới
         if (request.getImage() != null && !request.getImage().isEmpty()) {
             location.setImage(request.getImage());
         }
-        mapper.upDateLocation(location,request);
+        mapper.upDateLocation(location, request);
 
         return mapper.toLocationResponse(repository.save(location));
     }
 
-    public LocationResponse getLocation(@PathVariable String id){
+    public LocationResponse getLocation(@PathVariable String id) {
         Location location = getLocationById(id);
         return mapper.toLocationResponse(location);
     }
-    @PreAuthorize("hasAuthority('ADMIN')")
+
+    //    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public void deleteLocation(String id) {
         Location location = getLocationById(id);
         repository.delete(location);

@@ -3,15 +3,16 @@ package com.example.myevent_be.dto.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.Date;
 
-@Data
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class DeviceRentalRequest {
-    String deviceId;
-    String rentalId;
-    Integer quantity;
+public class TimelineUpdateRequest {
 
+    Date time_start;
+    String description;
+    String rental_id;
 }

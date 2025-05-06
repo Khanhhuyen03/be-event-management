@@ -1,6 +1,7 @@
 package com.example.myevent_be.controller;
 
 import com.example.myevent_be.dto.request.DeviceRentalRequest;
+import com.example.myevent_be.dto.request.DeviceRentalUpdateRequest;
 import com.example.myevent_be.dto.response.ApiResponse;
 import com.example.myevent_be.dto.response.DeviceRentalResponse;
 import com.example.myevent_be.service.DeviceRentalService;
@@ -9,7 +10,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,21 +50,31 @@ public class DeviceRentalController {
                 .build();
     }
 
-//    @PutMapping("/{id}")
-//    public ApiResponse<DeviceRentalResponse> updateDeviceRental(
-//            @PathVariable String id,
-//            @Valid @RequestBody DeviceRentalRequest request) {
-//        log.info("Request update device rental with id: {}", id);
-//        DeviceRentalResponse deviceRental = deviceRentalService.updateDeviceRental(id, request);
-//        return ApiResponse.<DeviceRentalResponse>builder()
-//                .result(deviceRental)
-//                .build();
-//    }
-
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteDeviceRental(@PathVariable String id) {
-        log.info("Request delete device rental with id: {}", id);
+    public ApiResponse<String> deleteDeviceRental(@PathVariable String id) {
         deviceRentalService.deleteDeviceRental(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.<String>builder()
+                .result("Deleted device rental with id: " + id)
+                .build();
+    }
+
+    @PatchMapping("/{id}")
+    public ApiResponse<DeviceRentalResponse> updateDeviceRental(
+            @PathVariable String id,
+            @Valid @RequestBody DeviceRentalUpdateRequest request) {
+        log.info("Request update device rental with id: {}", id);
+        DeviceRentalResponse deviceRental = deviceRentalService.updateDeviceRental(id, request);
+        return ApiResponse.<DeviceRentalResponse>builder()
+                .result(deviceRental)
+                .build();
+    }
+
+    @GetMapping("/rental/{rentalId}")
+    public ApiResponse<List<DeviceRentalResponse>> getDeviceRentalsByRentalId(@PathVariable String rentalId) {
+        log.info("Request get device rentals by rental id: {}", rentalId);
+        List<DeviceRentalResponse> deviceRentals = deviceRentalService.getDeviceRentalsByRentalId(rentalId);
+        return ApiResponse.<List<DeviceRentalResponse>>builder()
+                .result(deviceRentals)
+                .build();
     }
 }
