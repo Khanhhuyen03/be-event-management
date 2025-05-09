@@ -1,6 +1,7 @@
 package com.example.myevent_be.mapper;
 
 import com.example.myevent_be.dto.request.DeviceRentalUpdateRequest;
+import com.example.myevent_be.dto.request.RentalRequest;
 import com.example.myevent_be.dto.request.RentalUpdateRequest;
 import com.example.myevent_be.dto.response.RentalResponse;
 import com.example.myevent_be.entity.DeviceRental;
@@ -20,6 +21,10 @@ public interface RentalMapper {
     @Mapping(source = "rental_end_time", target = "rentalEndTime")
     @Mapping(source = "custom_location", target = "customLocation")
     RentalResponse toRentalResponse(Rental rental);
+
+    Rental toRental(RentalRequest request);
+
+
 
     void updateRental(@MappingTarget Rental rental, RentalUpdateRequest request);
 } 

@@ -1,10 +1,8 @@
-
 package com.example.myevent_be.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -35,17 +33,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    private final String[] PUBLIC_ENDPOINTS = {
-            "/users/signing-up",  "/users/**", "/auth/login", "/auth/introspect", "/event", "/event/**",
-            "/auth/logout", "/api/verification/verify", "/api/v1/FileUpload/**",
-            "/auth/forgot-password", "/auth/verify-code", "/auth/reset-password",
-            "/auth/verify-pass-code", "devices","devices/**","deviceType","deviceType/**","services",
-            "services/**"
-    };
-    JwtAuthenticationConverter jwtAuthenticationConverter(){
+
+    JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
@@ -60,7 +52,8 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(request -> request
                 .requestMatchers(PUBLIC_ENDPOINTS)
                 .permitAll()
-                .requestMatchers("/event", "/event/**").permitAll()
+//                .requestMatchers("/event", "/event/**").permitAll()
+                .requestMatchers("/static/**", "/public/**", "/timelines/**").permitAll()
                 .requestMatchers("/event-type/**").hasAnyAuthority("MANAGER", "ADMIN") // Chỉ ADMIN mới được tạo event type
                 .anyRequest()
                 .authenticated());
@@ -71,12 +64,20 @@ public class SecurityConfig {
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 //        httpSecurity.cors(Customizer.withDefaults());
-       // Bật CORS với CorsConfigurationSource tùy chỉnh
+        // Bật CORS với CorsConfigurationSource tùy chỉnh
         httpSecurity.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return httpSecurity.build();
     }
 
+    private final String[] PUBLIC_ENDPOINTS = {
+            "/users/signing-up", "/users/**", "/auth/login", "/auth/introspect", "/event", "/event/**",
+            "/auth/logout", "/api/verification/verify", "/api/v1/FileUpload/**",
+            "/auth/forgot-password", "/auth/verify-code", "/auth/reset-password",
+            "/auth/verify-pass-code", "devices", "/devices/**", "deviceType", "deviceType/**", "services",
+            "services/**", "/api/ai/**", "/locations/**", "/rentals/**", "/timelines/**", "/api/location-rentals/**",
+            "/api/device-rentals/**", "/api/service-rentals/**"
+    };
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -92,5 +93,22 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+
+    @Value("${google.ai.api.key}")
+    private String apiKey;
+
+    @Bean
+    public String apiKey() {
+        return apiKey;
+    }
 }
+
+
+
+
 

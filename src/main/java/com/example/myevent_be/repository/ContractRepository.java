@@ -10,7 +10,8 @@ import java.util.UUID;
 
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, String> {
-    boolean existsByPaymentIntentId(UUID paymentIntentId);
-    Optional<Contract> findByPaymentIntentId(UUID paymentIntentId);
+    boolean existsByPaymentIntentId(String paymentIntentId);
+    Optional<Contract> findByPaymentIntentId(String paymentIntentId);
     List<Contract> findByCustomerId(String customerId);
+    Optional<Contract> findById(String id);
 }

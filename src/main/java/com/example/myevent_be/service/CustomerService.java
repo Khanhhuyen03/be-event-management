@@ -1,5 +1,6 @@
 package com.example.myevent_be.service;
 
+import com.example.myevent_be.dto.request.CustomerRequest;
 import com.example.myevent_be.dto.response.CustomerResponse;
 import com.example.myevent_be.entity.Customer;
 import com.example.myevent_be.exception.ResourceNotFoundException;
@@ -34,6 +35,12 @@ public class CustomerService {
         log.info("Getting customer by id: {}", id);
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
+        return customerMapper.toCustomerResponse(customer);
+    }
+
+    public CustomerResponse createCustomer(CustomerRequest request){
+        Customer customer = customerMapper.toCustomer(request);
+        customer = customerRepository.save(customer);
         return customerMapper.toCustomerResponse(customer);
     }
 }

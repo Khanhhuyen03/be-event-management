@@ -166,28 +166,72 @@ public class ContractService {
     private final ContractMapper contractMapper;
 
     @Transactional
+//    public ContractResponse createContract(ContractRequest request) {
+//        log.info("Creating contract with payment intent id: {}", request.getPaymentIntentId());
+//
+//        // Kiểm tra contract đã tồn tại chưa
+//        contractRepository.findByPaymentIntentId(request.getPaymentIntentId())
+//                .ifPresent(contract -> {
+//                    log.warn("Contract already exists with payment intent id: {}", request.getPaymentIntentId());
+//                    throw new AppException(ErrorCode.CONTRACT_ALREADY_EXISTED);
+//                });
+//
+//        // Lấy tên địa danh từ locationId
+//        String provinceName = locationRepository.findNameById(request.getProvinceId());
+//        String districtName = locationRepository.findNameById(request.getDistrictId());
+//        String wardName = locationRepository.findNameById(request.getWardId());
+//        String fullAddress = request.getStreet() + ", " + wardName + ", " + districtName + ", " + provinceName;
+//
+//        // Tạo hoặc cập nhật customer
+//        Customer customer = customerRepository.findByPhoneNumber(request.getCustomerPhone())
+//                .orElseGet(Customer::new);
+//        customer.setName(request.getCustomerID());
+//        customer.setPhone_number(request.getCustomerPhone());
+//        customer.setAddress(fullAddress);
+//        customerRepository.save(customer);
+//
+//        // Lấy rental từ rentalId nếu có
+//        Rental rental = null;
+//        if (request.getRentalId() != null) {
+//            rental = rentalRepository.findById(request.getRentalId())
+//                    .orElseThrow(() -> new AppException(ErrorCode.RENTAL_NOT_FOUND));
+//        }
+//
+//        Contract contract = new Contract();
+//        contract.setName(request.getName());
+//        contract.setCustomer(customer);
+//        contract.setPaymentIntentId(request.getPaymentIntentId());
+//        if (request.getStatus() != null) {
+//            contract.setStatus(ContractStatus.valueOf(request.getStatus()));
+//        }
+//        if (rental != null) {
+//            contract.setRental(rental);
+//        }
+//        Contract savedContract = contractRepository.saveAndFlush(contract);
+//        log.info("Created contract with id: {}", savedContract.getId());
+//
+//        // Trả về response bằng mapper để đảm bảo mapping đúng các trường ngày tháng
+//        ContractResponse response = contractMapper.toContractResponse(savedContract);
+//        response.setEventTime(request.getEventTime());
+//        response.setRentalId(request.getRentalId());
+//        return response;
+//    }
     public ContractResponse createContract(ContractRequest request) {
         log.info("Creating contract with payment intent id: {}", request.getPaymentIntentId());
 
         // Kiểm tra contract đã tồn tại chưa
-        contractRepository.findByPaymentIntentId(request.getPaymentIntentId())
-                .ifPresent(contract -> {
-                    log.warn("Contract already exists with payment intent id: {}", request.getPaymentIntentId());
-                    throw new AppException(ErrorCode.CONTRACT_ALREADY_EXISTED);
-                });
-
-        // Lấy tên địa danh từ locationId
-        String provinceName = locationRepository.findNameById(request.getProvinceId());
-        String districtName = locationRepository.findNameById(request.getDistrictId());
-        String wardName = locationRepository.findNameById(request.getWardId());
-        String fullAddress = request.getStreet() + ", " + wardName + ", " + districtName + ", " + provinceName;
+//        contractRepository.findByPaymentIntentId(request.getPaymentIntentId())
+//                .ifPresent(contract -> {
+//                    log.warn("Contract already exists with payment intent id: {}", request.getPaymentIntentId());
+//                    throw new AppException(ErrorCode.CONTRACT_ALREADY_EXISTED);
+//                });
 
         // Tạo hoặc cập nhật customer
         Customer customer = customerRepository.findByPhoneNumber(request.getCustomerPhone())
                 .orElseGet(Customer::new);
         customer.setName(request.getCustomerName());
         customer.setPhone_number(request.getCustomerPhone());
-        customer.setAddress(fullAddress);
+        customer.setAddress(request.getAddress());
         customerRepository.save(customer);
 
         // Lấy rental từ rentalId nếu có
@@ -212,7 +256,6 @@ public class ContractService {
 
         // Trả về response bằng mapper để đảm bảo mapping đúng các trường ngày tháng
         ContractResponse response = contractMapper.toContractResponse(savedContract);
-        response.setEventTime(request.getEventTime());
         response.setRentalId(request.getRentalId());
         return response;
     }
@@ -286,7 +329,7 @@ public class ContractService {
         contractRepository.deleteById(contractId);
     }
 
-    public ContractResponse getContractByPaymentIntentId(UUID paymentIntentId) {
+    public ContractResponse getContractByPaymentIntentId(String paymentIntentId) {
         return contractRepository.findByPaymentIntentId(paymentIntentId)
                 .map(contractMapper::toContractResponse)
                 .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));

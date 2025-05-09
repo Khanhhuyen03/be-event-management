@@ -1,8 +1,10 @@
 package com.example.myevent_be.controller;
 
+import com.example.myevent_be.dto.request.CustomerRequest;
 import com.example.myevent_be.dto.response.ApiResponse;
 import com.example.myevent_be.dto.response.CustomerResponse;
 import com.example.myevent_be.service.CustomerService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,5 +38,13 @@ public class CustomerController {
         return ApiResponse.<CustomerResponse>builder()
                 .result(customer)
                 .build();
+    }
+
+    @PostMapping
+    public ApiResponse<CustomerResponse> createCustomer (@RequestBody @Valid CustomerRequest request){
+        return ApiResponse.<CustomerResponse>builder()
+                .result(customerService.createCustomer(request))
+                .build();
+
     }
 }

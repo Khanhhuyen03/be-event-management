@@ -25,6 +25,7 @@ public interface DeviceRentalMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "create_at", target = "create_at")
     @Mapping(source = "update_at", target = "update_at")
+    @Mapping(source = "device.image", target = "image")
     @Mapping(source = "rental.id", target = "rental_id")
     DeviceRentalResponse toDeviceRentalResponse(DeviceRental deviceRental);
 

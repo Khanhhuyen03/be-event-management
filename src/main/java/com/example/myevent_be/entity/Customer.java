@@ -22,7 +22,6 @@ import java.util.Set;
 public class Customer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
     @Nationalized
