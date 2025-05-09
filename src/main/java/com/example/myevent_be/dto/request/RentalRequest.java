@@ -19,19 +19,11 @@ import jakarta.validation.constraints.NotNull;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RentalRequest {
-    @NotNull(message = "userId is required")
+
     String userId;
-
-    @NotNull(message = "eventId is required")
     String eventId;
-
     BigDecimal totalPrice;
-
-    @NotNull(message = "rentalStartTime is required")
     Date rentalStartTime;
-
-    @NotNull(message = "rentalEndTime is required")
     Date rentalEndTime;
-
     String customLocation;
 } 

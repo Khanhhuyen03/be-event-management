@@ -16,9 +16,10 @@ public interface ContractMapper {
     @Mapping(source = "update_at", target = "updatedAt")
     @Mapping(source = "customer.name", target = "customerName")
     @Mapping(source = "customer.phone_number", target = "customerPhone")
-    @Mapping(source = "customer.address", target = "eventAddress")
+    @Mapping(source = "customer.address", target = "address")
     @Mapping(source = "rental.id", target = "rentalId")
     @Mapping(source = "status", target = "status", qualifiedByName = "statusToString")
+    @Mapping(source = "name", target = "name")
     ContractResponse toContractResponse(Contract contract);
 
     default void updateContract(@MappingTarget Contract contract, ContractUpdateRequest request) {

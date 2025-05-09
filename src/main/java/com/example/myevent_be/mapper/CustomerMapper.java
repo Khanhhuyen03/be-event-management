@@ -1,12 +1,11 @@
 package com.example.myevent_be.mapper;
 
-import com.example.myevent_be.dto.response.ContractResponse;
+import com.example.myevent_be.dto.request.CustomerRequest;
 import com.example.myevent_be.dto.response.CustomerResponse;
 import com.example.myevent_be.entity.Customer;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.Set;
 
 @Mapper(componentModel = "spring", uses = ContractMapper.class)
 public interface CustomerMapper {
@@ -18,4 +17,6 @@ public interface CustomerMapper {
     @Mapping(source = "update_at", target = "update_at")
     @Mapping(source = "contracts", target = "contracts")
     CustomerResponse toCustomerResponse(Customer customer);
+
+    Customer toCustomer (CustomerRequest request);
 }

@@ -1,17 +1,14 @@
 package com.example.myevent_be.mapper;
 
-import com.example.myevent_be.dto.request.DeviceRentalUpdateRequest;
 import com.example.myevent_be.dto.request.ServiceRentalRequest;
 import com.example.myevent_be.dto.request.ServiceRentalUpdateRequest;
 import com.example.myevent_be.dto.response.ServiceRentalResponse;
-import com.example.myevent_be.entity.DeviceRental;
 import com.example.myevent_be.entity.Rental;
 import com.example.myevent_be.entity.Service;
 import com.example.myevent_be.entity.ServiceRental;
 import com.example.myevent_be.exception.ResourceNotFoundException;
 import com.example.myevent_be.repository.ServiceRepository;
 import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(componentModel = "spring", uses =RentalMapper.class)
 public interface ServiceRentalMapper {
@@ -25,6 +22,7 @@ public interface ServiceRentalMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "create_at", target = "create_at")
     @Mapping(source = "update_at", target = "update_at")
+    @Mapping(source = "service.image", target = "image")
     @Mapping(source = "rental.id", target = "rental_id")
     ServiceRentalResponse toSerivceRentalResponse(ServiceRental serviceRental);
 

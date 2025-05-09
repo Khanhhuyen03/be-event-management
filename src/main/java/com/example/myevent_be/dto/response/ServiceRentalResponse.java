@@ -24,5 +24,6 @@ public class ServiceRentalResponse {
     Date create_at;
     Date update_at;
     String rental_id;
+    String image;
     
 }

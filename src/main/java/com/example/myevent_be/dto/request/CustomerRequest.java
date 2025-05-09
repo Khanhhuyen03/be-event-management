@@ -1,6 +1,5 @@
-package com.example.myevent_be.dto.response;
+package com.example.myevent_be.dto.request;
 
-import com.example.myevent_be.entity.Contract;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,21 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
-import java.util.Set;
-
 @Data
 @Table(name = "customer")
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CustomerResponse {
+public class CustomerRequest {
 
-    String id;
     String name;
     String phone_number;
     String address;
-    Date create_at;
-    Date update_at;
-    Set<Contract> contracts ;
+    String id;
 }

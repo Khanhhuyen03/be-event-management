@@ -32,13 +32,10 @@ public class LocationRentalService {
 
         // Lấy hoặc tạo mới Location
         Location location = locationRepository.findAll().stream()
-                .filter(l -> l.getName().equals(request.getLocationName()))
+                .filter(l -> l.getId().equals(request.getLocationId()))
                 .findFirst()
                 .orElseGet(() -> {
                     Location newLocation = new Location();
-                    newLocation.setName(request.getLocationName());
-                    newLocation.setAddress(request.getAddress());
-                    newLocation.setHourly_rental_fee(request.getPricePerDay());
                     return locationRepository.save(newLocation);
                 });
 
@@ -78,13 +75,10 @@ public class LocationRentalService {
         
         // Lấy hoặc tạo mới Location
         Location location = locationRepository.findAll().stream()
-                .filter(l -> l.getName().equals(request.getLocationName()))
+                .filter(l -> l.getId().equals(request.getLocationId()))
                 .findFirst()
                 .orElseGet(() -> {
                     Location newLocation = new Location();
-                    newLocation.setName(request.getLocationName());
-                    newLocation.setAddress(request.getAddress());
-                    newLocation.setHourly_rental_fee(request.getPricePerDay());
                     return locationRepository.save(newLocation);
                 });
 

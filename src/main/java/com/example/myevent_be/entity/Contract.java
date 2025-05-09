@@ -33,7 +33,7 @@ public class Contract {
     String name;
 
     @Column(name = "payment_intent_id")
-    UUID paymentIntentId;
+    String paymentIntentId;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")

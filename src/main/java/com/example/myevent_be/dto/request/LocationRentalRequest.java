@@ -1,28 +1,15 @@
 package com.example.myevent_be.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
 
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class LocationRentalRequest {
 
-    @NotBlank(message = "Location name is required")
-    private String locationName;
-
-    @NotBlank(message = "Address is required")
-    private String address;
-
-    @NotNull(message = "Price per day is required")
-    @Positive(message = "Price must be positive")
-    private BigDecimal pricePerDay;
-
-    @NotNull(message = "Quantity is required")
-    @Positive(message = "Quantity must be positive")
-    private Integer quantity;
-
-    private String rentalId;
+    String locationId;
+    String rentalId;
+    Integer quantity;
 } 
