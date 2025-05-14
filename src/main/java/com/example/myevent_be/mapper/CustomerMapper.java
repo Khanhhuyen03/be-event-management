@@ -9,9 +9,9 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring", uses = ContractMapper.class)
 public interface CustomerMapper {
-    @Mapping(source = "id", target = "id")
+    //@Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
-    @Mapping(source = "phone_number", target = "phone_number")
+    @Mapping(source = "phoneNumber", target = "phoneNumber")
     @Mapping(source = "address", target = "address")
     @Mapping(source = "create_at", target = "create_at")
     @Mapping(source = "update_at", target = "update_at")

@@ -33,6 +33,7 @@ public class Device {
     String image;
     BigDecimal hourly_rental_fee;
     int quantity;
+    @Nationalized
     String place;
 
     @CreationTimestamp

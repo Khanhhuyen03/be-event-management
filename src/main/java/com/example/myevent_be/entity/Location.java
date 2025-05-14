@@ -32,6 +32,7 @@ public class Location {
     String description;
     String image;
     BigDecimal hourly_rental_fee;
+    @Nationalized
     String address;
 
     @CreationTimestamp

@@ -34,6 +34,7 @@ public class Service {
     String image;
     BigDecimal hourly_salary;
     int quantity;
+    @Nationalized
     String place;
 
     @CreationTimestamp

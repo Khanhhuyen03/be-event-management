@@ -64,13 +64,20 @@ public class DeviceRentalService {
         device.setQuantity(device.getQuantity() - request.getQuantity());
         deviceRepository.save(device);
 
-        Rental rental = rentalRepository.findById(request.getRentalId())
-                .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
+//        Rental rental = rentalRepository.findById(request.getRentalId())
+//                .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
 
         DeviceRental deviceRental = new DeviceRental();
         deviceRental.setDevice(device);
-        deviceRental.setRental(rental);
+//        deviceRental.setRental(rental);
         deviceRental.setQuantity(request.getQuantity());
+
+        // Nếu có rentalId, liên kết với Rental
+        if (request.getRentalId() != null) {
+            Rental rental = rentalRepository.findById(request.getRentalId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Rental not found with id: " + request.getRentalId()));
+            deviceRental.setRental(rental);
+        }
 
         DeviceRental saved = deviceRentalRepository.save(deviceRental);
         return deviceRentalMapper.toDeviceRentalResponse(saved);

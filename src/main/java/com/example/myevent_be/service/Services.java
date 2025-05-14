@@ -38,7 +38,7 @@ public class Services {
         log.info("serviceName: {}", request.getName());
 
         repository.save(service);
-        return mapper.toServiceRespones(service);
+        return mapper.toServiceResponse(service);
     }
 
     public PageResponse getServices(int pageNo, int pageSize) {
@@ -47,7 +47,7 @@ public class Services {
             p = pageNo - 1;
         }
         Page<com.example.myevent_be.entity.Service> page = repository.findAll(PageRequest.of(p, pageSize));
-        return pageMapper.toPageResponse(page, mapper::toServiceRespones);
+        return pageMapper.toPageResponse(page, mapper::toServiceResponse);
     }
 
     public com.example.myevent_be.entity.Service getServiceById(String id) {
@@ -64,12 +64,12 @@ public class Services {
         }
         mapper.updateService(service, request);
 
-        return mapper.toServiceRespones(repository.save(service));
+        return mapper.toServiceResponse(repository.save(service));
     }
 
     public ServiceResponse getService(@PathVariable String id) {
         com.example.myevent_be.entity.Service device = getServiceById(id);
-        return mapper.toServiceRespones(device);
+        return mapper.toServiceResponse(device);
     }
 
     //    @PreAuthorize("hasAuthority('ADMIN')")

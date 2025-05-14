@@ -56,6 +56,10 @@ public class UserService {
 
     @Transactional
     public UserResponse createUser(UserCreateRequest request) {
+        // Kiểm tra độ dài mật khẩu
+        if (request == null || request.getPassword().length() < 8) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mật khẩu phải có ít nhất 8 ký tự.");
+        }
         if (userRepository.existsByEmail(request.getEmail()))
             throw new AppException(ErrorCode.USER_EXISTED);
 
@@ -86,7 +90,7 @@ public class UserService {
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
-    @PreAuthorize("hasAuthority('MANAGER')")
+//    @PreAuthorize("hasAuthority('MANAGER', 'USER')")
     public List<UserResponse> getUserByRole() {
         List<Role> roles = roleRepository.findByNameIn(Arrays.asList("USER", "SUPPLIER"));
         return userRepository.findByRoleIn(roles)
