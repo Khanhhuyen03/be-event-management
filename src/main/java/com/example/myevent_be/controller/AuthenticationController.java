@@ -54,16 +54,25 @@ public class AuthenticationController {
     }
 
     @PostMapping("/verify-pass-code")
-    public ResponseEntity<String> verifyCode(@RequestBody ForgetPasswordRequest request) {
-        boolean isValid = passwordResetService.verifyCode(request.getEmail(), request.getCode());
-        return ResponseEntity.ok(isValid ? "Mã đúng" : "Mã sai");
+    public ResponseEntity<ApiResponse<String>> verifyCode(@RequestBody ForgetPasswordRequest1 request) {
+        boolean isValid = passwordResetService.verifyCode(request.getEmail(),request.getCode());
+        if (isValid) {
+            return ResponseEntity.ok(ApiResponse.<String>builder()
+                    .result("Xác minh thành công")
+                    .message("Bạn có thể đặt lại mật khẩu")
+                    .build());
+        }
+
+        return ResponseEntity.badRequest().body(ApiResponse.<String>builder()
+                .message("Mã xác minh không hợp lệ hoặc đã hết hạn")
+                .build());
     }
 
     @PostMapping("/reset-password")
     public ApiResponse<Void> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-        passwordResetService.resetPassword(request.getNewPassword());
+        passwordResetService.resetPasswordByCode(request);
         return ApiResponse.<Void>builder()
-                .message("Đặt lại mật khẩu thành công")
+                .message("Đổi mật khẩu thành công")
                 .build();
     }
 
