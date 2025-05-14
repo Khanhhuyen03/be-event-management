@@ -76,7 +76,7 @@ public class SecurityConfig {
             "/auth/forgot-password", "/auth/verify-code", "/auth/reset-password",
             "/auth/verify-pass-code", "devices", "/devices/**", "deviceType", "deviceType/**", "services",
             "services/**", "/api/ai/**", "/locations/**", "/rentals/**", "/timelines/**", "/api/location-rentals/**",
-            "/api/device-rentals/**", "/api/service-rentals/**"
+            "/api/device-rentals/**", "/api/service-rentals/**", "/api/v1/payment/**"
     };
 
     @Bean

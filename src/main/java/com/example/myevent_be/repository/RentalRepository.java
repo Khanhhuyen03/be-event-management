@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, String> {
     List<Rental> findByEventId(String eventId);
+    List<Rental> findByUserId(String userId);
 }

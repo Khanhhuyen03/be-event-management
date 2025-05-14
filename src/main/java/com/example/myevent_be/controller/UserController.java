@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/manager")
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'USER')")
     public List<UserResponse> getUserByRole() {
         return userService.getUserByRole();
     }

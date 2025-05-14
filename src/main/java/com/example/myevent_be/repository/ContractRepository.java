@@ -14,4 +14,5 @@ public interface ContractRepository extends JpaRepository<Contract, String> {
     Optional<Contract> findByPaymentIntentId(String paymentIntentId);
     List<Contract> findByCustomerId(String customerId);
     Optional<Contract> findById(String id);
+    List<Contract> findByRentalIdIn(List<String> rentalIds);
 }

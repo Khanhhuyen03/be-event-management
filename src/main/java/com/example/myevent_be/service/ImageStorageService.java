@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 public class ImageStorageService implements IStorageService {
     private final Path storageFolder;
 
-    public ImageStorageService(@Value("${app.upload.dir:C:/upload/event-images}") String uploadDir) {
+    public ImageStorageService(@Value("${app.upload.dir:D:/myevent/be-event/upload/event-images}") String uploadDir) {
         this.storageFolder = Paths.get(uploadDir);
         try {
             Files.createDirectories(storageFolder);

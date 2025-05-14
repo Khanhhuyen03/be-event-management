@@ -22,11 +22,12 @@ import java.util.Set;
 public class Customer {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
     @Nationalized
     String name;
-    String phone_number;
+    String phoneNumber;
     @Nationalized
     String address;
 

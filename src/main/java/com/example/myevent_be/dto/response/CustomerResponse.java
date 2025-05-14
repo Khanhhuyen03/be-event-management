@@ -20,7 +20,7 @@ public class CustomerResponse {
 
     String id;
     String name;
-    String phone_number;
+    String phoneNumber;
     String address;
     Date create_at;
     Date update_at;

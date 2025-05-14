@@ -15,7 +15,7 @@ public interface ContractMapper {
     @Mapping(source = "create_at", target = "createdAt")
     @Mapping(source = "update_at", target = "updatedAt")
     @Mapping(source = "customer.name", target = "customerName")
-    @Mapping(source = "customer.phone_number", target = "customerPhone")
+    @Mapping(source = "customer.phoneNumber", target = "customerPhone")
     @Mapping(source = "customer.address", target = "address")
     @Mapping(source = "rental.id", target = "rentalId")
     @Mapping(source = "status", target = "status", qualifiedByName = "statusToString")

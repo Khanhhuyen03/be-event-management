@@ -70,7 +70,7 @@ public class ApplicationInitConfig {
                         .first_name("admin")
                         .last_name("admin")
                         .email("admin123@gmail.com")
-                        .phone_number("0123456789")
+                        .phoneNumber("0123456789")
                         .password(passwordEncoder.encode("admin"))
                         .role(adminRole) // Gán vai trò ADMIN cho người dùng
                         .build();

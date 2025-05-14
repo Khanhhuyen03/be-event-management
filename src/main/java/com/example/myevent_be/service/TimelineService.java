@@ -7,6 +7,7 @@ import com.example.myevent_be.dto.response.DeviceRentalResponse;
 import com.example.myevent_be.dto.response.PageResponse;
 import com.example.myevent_be.dto.response.TimelineResponse;
 import com.example.myevent_be.entity.DeviceRental;
+import com.example.myevent_be.entity.Rental;
 import com.example.myevent_be.entity.TimeLine;
 import com.example.myevent_be.exception.ResourceNotFoundException;
 import com.example.myevent_be.mapper.PageMapper;
@@ -34,14 +35,20 @@ public class TimelineService {
     TimelineRepository timelineRepository;
     TimelineMapper timelineMapper;
     PageMapper pageMapper;
-    // RentalRepository rentalRepository;
+     RentalRepository rentalRepository;
 
 
     public TimelineResponse createTimeline(TimelineRequest request) {
-
+        log.info("Creating new timeline rental");
         TimeLine timeline = timelineMapper.toTimeline(request);
 
         log.info("Received TimelineRequest: {}", request);
+        // Nếu có rentalId, liên kết với Rental
+        if (request.getRental_id() != null) {
+            Rental rental = rentalRepository.findById(request.getRental_id())
+                    .orElseThrow(() -> new ResourceNotFoundException("Rental not found with id: " + request.getRental_id()));
+            timeline.setRental(rental);
+        }
 
         timelineRepository.save(timeline);
         return timelineMapper.toTimelineResponse(timeline);

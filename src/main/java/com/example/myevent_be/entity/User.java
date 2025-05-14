@@ -42,8 +42,8 @@ public class User {
     Role role;
 
     String avatar;
-//    @ValidPhoneNumber
-    String phone_number;
+    @ValidPhoneNumber
+    String phoneNumber;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -65,4 +65,7 @@ public class User {
 
     @OneToMany(mappedBy = "id")
     Set<Location> locations;
+
+    @Column(nullable = true)
+    private Boolean isVerified = false; // Mặc định là chưa xác minh
 }
