@@ -14,7 +14,7 @@ public class ForgetPasswordRequest {
 
     @Email(message = "Email không hợp lệ")
     String email;
-    String code;
+    //String code;
 //    String newPassword;
 //    String confirmPassword;
 }
