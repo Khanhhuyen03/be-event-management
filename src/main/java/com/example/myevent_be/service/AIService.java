@@ -1,3 +1,4 @@
+
 package com.example.myevent_be.service;
 
 import com.example.myevent_be.dto.response.AIResponse;
@@ -17,9 +18,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Slf4j
 @Service
@@ -27,44 +28,35 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AIService {
 
-    //    @Value("${google.ai.api.key}")
-    String apiKey;  // API Key của bạn
+    @Value("${google.ai.api.key}")
+    private String apiKey;
 
-    ObjectMapper objectMapper;
-    RestTemplate restTemplate;
-    EventTypeRepository eventTypeRepository;
-    EventRepository eventRepository;
+    private final ObjectMapper objectMapper;
+    private final RestTemplate restTemplate;
+    private final EventTypeRepository eventTypeRepository;
+    private final EventRepository eventRepository;
 
-    String url = "https://generativeai.googleapis.com/v1beta2/models/gemini-1.5-pro:generateText"; // Endpoint API của Google AI Studio
-
-    @Autowired
-    public AIService(ObjectMapper objectMapper, RestTemplate restTemplate,
-                     EventTypeRepository eventTypeRepository, EventRepository eventRepository,
-                     @Value("${google.ai.api.key}") String apiKey) {
-        this.objectMapper = objectMapper;
-        this.restTemplate = restTemplate;
-        this.eventTypeRepository = eventTypeRepository;
-        this.eventRepository = eventRepository;
-        this.apiKey = apiKey;
-    }
-        public AIResponse startConversation() {
+    private static final String GEMINI_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent";
+    public AIResponse startConversation() {
         AIResponse response = new AIResponse();
-        response.setMessage("Bạn muốn tổ chức sự kiện gì? Đây là danh sách các loại sự kiện mà chúng tôi cung cấp ");
-
-        // Lấy danh sách loại sự kiện từ database
-        List<String> eventTypes = eventTypeRepository.findAll().stream()
-                .map(EventType::getName)
-                .collect(Collectors.toList());
-        response.setEventTypes(eventTypes);
-
+        try {
+            List<String> eventTypes = eventTypeRepository.findAll().stream()
+                    .map(EventType::getName)
+                    .filter(name -> name != null && !name.isBlank())
+                    .collect(Collectors.toList());
+            response.setEventTypes(eventTypes);
+//            response.setMessage("Xin chào! Vui lòng chọn loại sự kiện bạn cần hỗ trợ.");
+        } catch (Exception e) {
+            log.error("Error fetching event types", e);
+            response.setMessage("Có lỗi khi tải danh sách loại sự kiện. Vui lòng thử lại.");
+            response.setEventTypes(Collections.emptyList());
+        }
         return response;
     }
-
 
     public AIResponse generateResponse(String userInput) {
         AIResponse response = new AIResponse();
 
-        // Kiểm tra loại sự kiện có tồn tại trong database
         if (!eventTypeRepository.findByName(userInput).isPresent()) {
             List<String> eventTypes = eventTypeRepository.findAll().stream()
                     .map(EventType::getName)
@@ -91,41 +83,41 @@ public class AIService {
             return dto;
         }).collect(Collectors.toList());
         response.setEvents(eventDtos);
-//        return response.setEvents("");
         return response;
     }
 
-
     private String callGeminiAPI(String prompt) {
         try {
-            String url = "https://generativeai.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + apiKey);
 
-            String requestBody = objectMapper.writeValueAsString(
-                    new GeminiRequest("Hãy trả lời tự nhiên: Bạn muốn tổ chức " + prompt + " như thế nào?"));
+            String url = GEMINI_URL + "?key=" + apiKey;
+
+            // Cập nhật request body theo định dạng mới của Gemini API
+            String requestBody = String.format(
+                    "{\"contents\": [{\"parts\": [{\"text\": \"Hãy trả lời tự nhiên: Bạn muốn tổ chức %s như thế nào?\"}]}]}",
+                    prompt
+            );
 
             HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
             if (response.getStatusCode().is2xxSuccessful()) {
-                return objectMapper.readTree(response.getBody()).get("text").asText();
+                return objectMapper.readTree(response.getBody())
+                        .path("candidates")
+                        .get(0)
+                        .path("content")
+                        .path("parts")
+                        .get(0)
+                        .path("text")
+                        .asText("Không nhận được phản hồi từ AI.");
             } else {
                 log.error("Gemini API error: {}", response.getStatusCode());
-                return "Có lỗi khi gọi AI. Vui lòng thử lại.";
+                return "Có lỗi khi gọi AI. Vui lòng thử lại. Mã lỗi: " + response.getStatusCode();
             }
         } catch (Exception e) {
             log.error("Error calling Gemini API", e);
-            return "Có lỗi khi xử lý yêu cầu.";
-        }
-    }
-
-    private static class GeminiRequest {
-        String prompt;
-
-        GeminiRequest(String prompt) {
-            this.prompt = prompt;
+            return "Có lỗi khi xử lý yêu cầu: " + e.getMessage();
         }
     }
 }

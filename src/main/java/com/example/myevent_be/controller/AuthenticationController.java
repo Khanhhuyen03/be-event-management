@@ -1,9 +1,6 @@
 package com.example.myevent_be.controller;
 
-import com.example.myevent_be.dto.request.AuthenticationRequest;
-import com.example.myevent_be.dto.request.ForgetPasswordRequest;
-import com.example.myevent_be.dto.request.LogoutRequest;
-import com.example.myevent_be.dto.request.ResetPasswordRequest;
+import com.example.myevent_be.dto.request.*;
 import com.example.myevent_be.dto.response.ApiResponse;
 import com.example.myevent_be.dto.response.AuthenticationResponse;
 import com.example.myevent_be.service.AuthenticationService;

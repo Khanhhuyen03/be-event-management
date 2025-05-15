@@ -23,7 +23,7 @@ public class UserResponse {
     String last_name;
     String email;
     String avatar;
-    String phoneNumber;
+    String phone_number;
     Date created_at;
     Date update_at;
     String roleName; // Chỉ lấy tên role

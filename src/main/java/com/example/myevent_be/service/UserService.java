@@ -188,6 +188,7 @@ public class UserService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'USER')")
     public void deleteUser(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
