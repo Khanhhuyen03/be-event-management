@@ -87,12 +87,6 @@ public class PasswordResetService {
         }
     }
 
-    public boolean verifyCode(String email, String inputCode) {
-        PasswordResetToken codeData = verificationCodes.get(email);
-        return codeData != null &&
-                codeData.getToken().equals(inputCode) &&
-                codeData.getExpiryDate().after(new Date());
-    }
     
     public boolean verifyCode(String email, String inputCode) {
         User user = userRepository.findByEmail(email)

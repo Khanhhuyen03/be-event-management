@@ -78,7 +78,7 @@ public class PaymentController {
             // Tạo URL thanh toán VNPAY
             String paymentUrl = vnPayService.generateVNPayUrl(
                     amountToPay.doubleValue(),
-                    contractId,
+                    contractId + paymentType,
                     VNPayService.getIpAddress(request)
             );
 
@@ -106,20 +106,28 @@ public class PaymentController {
 
             if ("00".equals(responseCode)) {
                 log.info("Thanh toán thành công cho rental: {}", txnRef);
-
+                String result = txnRef.replaceAll("(deposit|remaining)$", "");
+                log.info("Minhhhhh: {}", result);
                 // Cập nhật trạng thái contract
-                Contract contract = contractRepository.findById(txnRef)
+                Contract contract = contractRepository.findById(result)
                         .orElseThrow(() -> new AppException(ErrorCode.CONTRACT_NOT_FOUND));
                 log.info("Đã tìm thấy contract: {}", contract.getId());
-
-                contract.setStatus(ContractStatus.Completed);
+                //_________________
+                // Cập nhật trạng thái dựa vào trạng thái hiện tại
+                if (contract.getStatus() == ContractStatus.Draft) {
+                    contract.setStatus(ContractStatus.DepositPaid);
+                } else if (contract.getStatus() == ContractStatus.WaitingPaid) {
+                    contract.setStatus(ContractStatus.Completed);
+                }
                 contractRepository.save(contract);
-                log.info("Đã cập nhật trạng thái contract thành Completed");
+                log.info("Đã cập nhật trạng thái contract thành {}", contract.getStatus());
+                //__________________-
 
-                return ResponseEntity.ok("Thanh toán thành công!\n" +
-                        "Mã giao dịch: " + transactionNo + "\n" +
-                        "Ngân hàng: " + bankCode + "\n" +
-                        "Thời gian: " + payDate);
+//                return ResponseEntity.ok("Thanh toán thành công!\n" +
+//                        "Mã giao dịch: " + transactionNo + "\n" +
+//                        "Ngân hàng: " + bankCode + "\n" +
+//                        "Thời gian: " + payDate);
+                return ResponseEntity.ok(contract.getId());
             } else {
                 log.warn("Thanh toán thất bại cho rental: {}, mã lỗi: {}", txnRef, responseCode);
                 return ResponseEntity.badRequest().body("Thanh toán thất bại! Mã lỗi: " + responseCode);
@@ -189,7 +197,13 @@ public class PaymentController {
 
             // Cập nhật trạng thái contract
             if ("00".equals(responseCode)) {
-                contract.setStatus(ContractStatus.Completed);
+//                contract.setStatus(ContractStatus.Completed);
+//                contractRepository.save(contract);
+                if (contract.getStatus() == ContractStatus.Draft) {
+                    contract.setStatus(ContractStatus.DepositPaid);
+                } else if (contract.getStatus() == ContractStatus.WaitingPaid) {
+                    contract.setStatus(ContractStatus.Completed);
+                }
                 contractRepository.save(contract);
                 log.info("IPN: Payment successful - {}", txnRef);
                 return ResponseEntity.ok("{\"RspCode\":\"00\",\"Message\":\"Confirm Success\"}");
