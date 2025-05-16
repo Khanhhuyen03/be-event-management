@@ -9,11 +9,13 @@ import com.example.myevent_be.repository.ContractRepository;
 import com.example.myevent_be.repository.RentalRepository;
 import com.example.myevent_be.service.VNPayService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +92,7 @@ public class PaymentController {
     }
 
     @GetMapping("/vnpay/return")
-    public ResponseEntity<String> paymentReturn(
+    public void paymentReturn(
             @RequestParam("vnp_ResponseCode") String responseCode,
             @RequestParam("vnp_TxnRef") String txnRef,
             @RequestParam("vnp_Amount") String amount,
@@ -98,8 +100,9 @@ public class PaymentController {
             @RequestParam("vnp_BankCode") String bankCode,
             @RequestParam("vnp_PayDate") String payDate,
             @RequestParam("vnp_TransactionNo") String transactionNo,
-            @RequestParam("vnp_SecureHash") String secureHash
-    ) {
+            @RequestParam("vnp_SecureHash") String secureHash,
+            HttpServletResponse response
+    ) throws IOException {
         try {
             log.info("Nhận kết quả thanh toán từ VNPAY - Mã giao dịch: {}", txnRef);
             log.info("Response Code: {}, Bank Code: {}, Amount: {}", responseCode, bankCode, amount);
@@ -127,17 +130,18 @@ public class PaymentController {
 //                        "Mã giao dịch: " + transactionNo + "\n" +
 //                        "Ngân hàng: " + bankCode + "\n" +
 //                        "Thời gian: " + payDate);
-                return ResponseEntity.ok(contract.getId());
+                String redirectUrl = "http://127.0.0.1:49835/client/payment.html?id=" + contract.getId();
+                response.sendRedirect(redirectUrl);
             } else {
                 log.warn("Thanh toán thất bại cho rental: {}, mã lỗi: {}", txnRef, responseCode);
-                return ResponseEntity.badRequest().body("Thanh toán thất bại! Mã lỗi: " + responseCode);
+                response.sendRedirect("http://127.0.0.1:49835/client/ListContract.html");
             }
         } catch (AppException e) {
             log.error("Lỗi không tìm thấy contract: ", e);
-            return ResponseEntity.badRequest().body("Lỗi: " + e.getMessage());
+            response.sendRedirect("http://127.0.0.1:49835/client/ListContract.html");
         } catch (Exception e) {
             log.error("Lỗi xử lý kết quả thanh toán: ", e);
-            return ResponseEntity.badRequest().body("Lỗi xử lý thanh toán: " + e.getMessage());
+            response.sendRedirect("http://127.0.0.1:49835/client/ListContract.html");
         }
     }
 
