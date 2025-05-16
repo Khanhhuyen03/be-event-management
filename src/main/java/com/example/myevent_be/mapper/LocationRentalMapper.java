@@ -16,6 +16,7 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring", uses =RentalMapper.class)
 public interface LocationRentalMapper {
 
+    @Mapping(source = "location.id", target = "locationID", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "location.name", target = "name", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "location.user.first_name", target = "supplierName", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "location.hourly_rental_fee", target = "hourly_rental_fee", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

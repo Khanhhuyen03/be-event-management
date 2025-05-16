@@ -29,10 +29,10 @@ public class EventService {
     EventRepository eventRepository;
     EventTypeRepository eventTypeRepository;
 
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
+    //@PreAuthorize("hasAnyAuthority('ADMIN', 'MANAGER')")
     public EventResponse createEvent(EventCreateRequest request){
-        if (eventRepository.existsByName(request.getName()))
-            throw new AppException(ErrorCode.EVENTTYPE_EXISTED);
+//        if (eventRepository.existsByName(request.getName()))
+//            throw new AppException(ErrorCode.EVENTTYPE_EXISTED);
 
 //        Event event = eventMapper.toEvent(request);
 

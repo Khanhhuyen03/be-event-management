@@ -13,7 +13,7 @@ public interface EventMapper {
     @Mapping(source = "eventType_id", target = "eventType.id")
     Event toEvent(EventCreateRequest request);
 
-//    @Mapping(source = "event_type.id", target = "eventType_id") // 👈 Map khi trả về
+    @Mapping(source = "eventType.id", target = "eventTypeID")
     @Mapping(source = "eventType", target = "eventTypeName", qualifiedByName = "eventTypeToString")
     EventResponse toEventResponse(Event event);
 

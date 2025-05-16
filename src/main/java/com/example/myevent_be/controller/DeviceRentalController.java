@@ -43,7 +43,7 @@ public class DeviceRentalController {
 
     @PostMapping
     public ApiResponse<DeviceRentalResponse> createDeviceRental(@Valid @RequestBody DeviceRentalRequest request) {
-        log.info("Request create device rental");
+        log.info("Request create device rental {}",request.getDeviceId());
         DeviceRentalResponse deviceRental = deviceRentalService.createDeviceRental(request);
         return ApiResponse.<DeviceRentalResponse>builder()
                 .result(deviceRental)

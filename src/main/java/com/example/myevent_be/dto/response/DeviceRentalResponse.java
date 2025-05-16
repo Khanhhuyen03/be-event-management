@@ -25,4 +25,5 @@ public class DeviceRentalResponse {
     Date update_at;
     String rental_id;
     String image;
+    String deviceID;
 }

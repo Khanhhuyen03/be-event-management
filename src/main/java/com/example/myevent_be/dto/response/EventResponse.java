@@ -32,6 +32,7 @@ public class EventResponse {
     String invitation_link;
     Date created_at;
     Date update_at;
-    String eventTypeName; // Chỉ lấy tên của eventType
+    String eventTypeName;
+    String eventTypeID;
 
 }
