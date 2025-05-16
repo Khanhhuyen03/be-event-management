@@ -16,6 +16,7 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface DeviceRentalMapper {
+    @Mapping(source = "device.id", target = "deviceID")
     @Mapping(source = "device.device_type.name", target = "deviceTypeName")
     @Mapping(source = "device.name", target = "deviceName")
     @Mapping(source = "device.user.first_name", target = "supplierName")

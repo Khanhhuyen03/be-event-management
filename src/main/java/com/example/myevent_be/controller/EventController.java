@@ -31,21 +31,23 @@ public class EventController {
     @PostMapping(value = "/create-event", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseBody
     ApiResponse<EventResponse> createEvent(
-            @RequestPart("file") MultipartFile file,
+            @RequestPart(value = "file", required = false) MultipartFile file,
             @RequestPart("event") @Valid EventCreateRequest request){
         log.info("Received create event request: {}", request);
-        log.info("File details - Name: {}, Size: {}, ContentType: {}",
-            file.getOriginalFilename(),
-            file.getSize(),
-            file.getContentType());
+//        log.info("File details - Name: {}, Size: {}, ContentType: {}",
+//            file.getOriginalFilename(),
+//            file.getSize(),
+//            file.getContentType());
 
         try {
             // Store the uploaded file
-            String fileName = storageService.storeFile(file);
-            log.info("File stored successfully with name: {}", fileName);
-
-            // Set the image path in the request
-            request.setImg(fileName);
+            if (file != null && !file.isEmpty()) {
+                String fileName = storageService.storeFile(file);
+                request.setImg(fileName);
+            } else {
+                log.info("No file uploaded");
+                request.setImg(null);
+            }
 
             EventResponse response = eventService.createEvent(request);
             log.info("Event created successfully: {}", response);

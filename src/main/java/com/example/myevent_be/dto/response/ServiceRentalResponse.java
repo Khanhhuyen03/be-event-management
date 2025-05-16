@@ -25,5 +25,5 @@ public class ServiceRentalResponse {
     Date update_at;
     String rental_id;
     String image;
-    
+    String serviceID;
 }

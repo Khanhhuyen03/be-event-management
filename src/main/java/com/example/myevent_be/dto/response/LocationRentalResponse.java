@@ -23,5 +23,6 @@ public class LocationRentalResponse {
     Date created_at;
     Date update_at;
     String rental_id;
+    String locationID;
 
 }

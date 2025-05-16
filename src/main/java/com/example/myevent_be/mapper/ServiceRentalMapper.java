@@ -12,7 +12,7 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses =RentalMapper.class)
 public interface ServiceRentalMapper {
-
+    @Mapping(source = "service.id", target = "serviceID", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "service.name", target = "serviceName", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "service.user.first_name", target = "supplierName", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "service.hourly_salary", target = "pricePerDay", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
