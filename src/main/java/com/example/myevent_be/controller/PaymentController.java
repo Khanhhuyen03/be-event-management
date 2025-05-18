@@ -62,7 +62,8 @@ public class PaymentController {
 //            } else if ("remaining".equalsIgnoreCase(paymentType)) {
 //                // Thanh toán còn lại: 90% totalPrice
 //                amountToPay = totalPrice.multiply(new BigDecimal("0.9"));
-            if ("deposit".equalsIgnoreCase(paymentType)) {
+            if (("depos" +
+                    "it").equalsIgnoreCase(paymentType)) {
                 amountToPay = totalPrice.multiply(new BigDecimal("0.1"));
                 log.info("Amount to Pay (Deposit 10%): {}", amountToPay);
             } else if ("remaining".equalsIgnoreCase(paymentType)) {
@@ -130,18 +131,23 @@ public class PaymentController {
 //                        "Mã giao dịch: " + transactionNo + "\n" +
 //                        "Ngân hàng: " + bankCode + "\n" +
 //                        "Thời gian: " + payDate);
-                String redirectUrl = "http://127.0.0.1:49835/client/payment.html?id=" + contract.getId();
+//                return ResponseEntity.ok(contract.getId());
+                String redirectUrl = "http://127.0.0.1:5500/client/payment.html?id=" + contract.getId() + "&vnp_ResponseCode=" + responseCode +"&vnp_Amount="+amount + "&vnp_TransactionNo="+transactionNo +"&vnp_PayDate="+payDate;
                 response.sendRedirect(redirectUrl);
             } else {
                 log.warn("Thanh toán thất bại cho rental: {}, mã lỗi: {}", txnRef, responseCode);
-                response.sendRedirect("http://127.0.0.1:49835/client/ListContract.html");
+//                return ResponseEntity.badRequest().body("Thanh toán thất bại! Mã lỗi: " + responseCode);
+                response.sendRedirect("http://127.0.0.1:5500/client/ListContract.html");
             }
         } catch (AppException e) {
             log.error("Lỗi không tìm thấy contract: ", e);
-            response.sendRedirect("http://127.0.0.1:49835/client/ListContract.html");
+//            return ResponseEntity.badRequest().body("Lỗi: " + e.getMessage());
+            response.sendRedirect("http://127.0.0.1:5500/client/ListContract.html");
         } catch (Exception e) {
             log.error("Lỗi xử lý kết quả thanh toán: ", e);
-            response.sendRedirect("http://127.0.0.1:49835/client/ListContract.html");
+//            return ResponseEntity.badRequest().body("Lỗi xử lý thanh toán: " + e.getMessage());
+            response.sendRedirect("http://127.0.0.1:5500/client/ListContract.html");
+
         }
     }
 

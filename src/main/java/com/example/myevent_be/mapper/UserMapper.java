@@ -13,10 +13,12 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring", uses = RoleMapper.class,
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface UserMapper {
+
     User toUser(UserCreateRequest request);
 
 //    @Mapping(target = "roleName", source = "role")
     @Mapping(source = "role", target = "roleName", qualifiedByName = "roleToString")
+    @Mapping(source = "phoneNumber", target = "phone_number")
     UserResponse toUserResponse(User user);
 
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
