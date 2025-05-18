@@ -147,6 +147,7 @@ public class PaymentController {
             log.error("Lỗi xử lý kết quả thanh toán: ", e);
 //            return ResponseEntity.badRequest().body("Lỗi xử lý thanh toán: " + e.getMessage());
             response.sendRedirect("http://127.0.0.1:5500/client/ListContract.html");
+
         }
     }
 
