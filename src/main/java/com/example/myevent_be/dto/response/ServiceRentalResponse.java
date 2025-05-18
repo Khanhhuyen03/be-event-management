@@ -26,4 +26,5 @@ public class ServiceRentalResponse {
     String rental_id;
     String image;
     String serviceID;
+    
 }
